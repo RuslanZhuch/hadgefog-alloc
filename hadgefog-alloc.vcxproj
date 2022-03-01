@@ -19,8 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="HeapManagers.ixx" />
+    <ClCompile Include="AlgLinear.ixx" />
     <ClCompile Include="MemoryBlock.ixx" />
+    <ClCompile Include="MemoryUtils.ixx" />
+    <ClCompile Include="SourceExt.ixx" />
+    <ClCompile Include="SourceHeap.ixx" />
+    <ClCompile Include="SourceStack.ixx" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

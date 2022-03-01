@@ -8,13 +8,31 @@
     <Filter Include="lib">
       <UniqueIdentifier>{f41832cf-4d2a-4578-9821-296ed732c35a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lib\MemorySources">
+      <UniqueIdentifier>{0297b287-5094-497c-b98d-7a7b0abef630}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lib\Algorithms">
+      <UniqueIdentifier>{9b1c6488-78fd-4bbf-9fb0-17c49759fe58}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MemoryBlock.ixx">
       <Filter>lib</Filter>
     </ClCompile>
-    <ClCompile Include="HeapManagers.ixx">
+    <ClCompile Include="MemoryUtils.ixx">
       <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceHeap.ixx">
+      <Filter>lib\MemorySources</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceExt.ixx">
+      <Filter>lib\MemorySources</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceStack.ixx">
+      <Filter>lib\MemorySources</Filter>
+    </ClCompile>
+    <ClCompile Include="AlgLinear.ixx">
+      <Filter>lib\Algorithms</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
