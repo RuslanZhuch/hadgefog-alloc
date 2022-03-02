@@ -14,7 +14,8 @@
 #pragma warning(disable : 4514)
 #pragma warning(disable : 4626)
 
-
 #include "gtest/gtest.h"
 
 #pragma warning( pop )
+
+#include "TestUtils.h"
