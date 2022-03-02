@@ -20,10 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AlgLinear.ixx" />
+    <ClCompile Include="GarbageWriter.ixx" />
     <ClCompile Include="MemoryBlock.ixx" />
     <ClCompile Include="MemoryUtils.ixx" />
     <ClCompile Include="SourceExt.ixx" />
     <ClCompile Include="SourceHeap.ixx" />
+    <ClCompile Include="SourcesCommon.ixx" />
     <ClCompile Include="SourceStack.ixx" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
