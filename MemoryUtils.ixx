@@ -1,6 +1,7 @@
 export module MemoryUtils;
 
 export using mem_t = size_t;
+export using byte_t = unsigned char;
 
 export namespace hfog::MemoryUtils::Literals
 {

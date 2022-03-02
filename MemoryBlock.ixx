@@ -1,5 +1,7 @@
+module;
 #include <memory>
 export module MemoryBlock;
+import MemoryUtils;
 
 export namespace hfog
 {
@@ -7,7 +9,7 @@ export namespace hfog
 	struct MemoryBlock
 	{
 
-		std::byte* ptr{ nullptr };
+		byte_t* ptr{ nullptr };
 		size_t size{ 0 };
 
 	};
