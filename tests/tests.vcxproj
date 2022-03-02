@@ -34,9 +34,11 @@
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="TestUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AllocAlgorithms.cpp" />
+    <ClCompile Include="GarbageWriter.cpp" />
     <ClCompile Include="memoryBlock.cpp" />
     <ClCompile Include="MemoryUtils.cpp" />
     <ClCompile Include="pch.cpp">

@@ -1,14 +1,14 @@
 export module SourceExt;
 
 export import MemoryBlock;
-
 export import MemoryUtils;
+export import GarbageWriter;
 
 export namespace hfog::Sources
 {
 
 
-	template <size_t alignment, typename alignFunc = hfog::MemoryUtils::align<alignment>>
+	template <GarbageWriter::CtGarbageWriter<char> garbageWriterOp = GarbageWriter::Default>
 	class External
 	{
 
@@ -17,30 +17,35 @@ export namespace hfog::Sources
 			:extMemoryBlock(extMemory)
 		{}
 
-		MemoryBlock allocate(mem_t offset, size_t size)
+		MemoryBlock getMemory(mem_t offset, size_t size)
 		{
 
 			MemoryBlock memBlock;
 
-			if (this->extMemoryBlock.ptr == nullptr ||
-				size == 0)
+			if (this->extMemoryBlock.ptr == nullptr)
 				return memBlock;
 
-			const auto alignmentSize{ alignFunc()(size) };
-			if (offset + alignmentSize > this->extMemoryBlock.size)
+			if (offset + size > this->extMemoryBlock.size)
 				return memBlock;
 
 			memBlock.ptr = extMemoryBlock.ptr + offset;
 			if (memBlock.ptr != nullptr)
-				memBlock.size = alignmentSize;
+				memBlock.size = size;
+
+			garbageWriterOp::write(memBlock.ptr, 0, size);
 
 			return memBlock;
 
 		}
 
-		void deallocate([[maybe_unused]] MemoryBlock memBlock)
+		void releaseMemory(MemoryBlock memBlock)
 		{
+			garbageWriterOp::clear(memBlock.ptr, 0, memBlock.size);
+		}
 
+		void releaseAllMemory()
+		{
+			garbageWriterOp::clear(this->extMemoryBlock.ptr, 0, this->extMemoryBlock.size);
 		}
 
 	private:

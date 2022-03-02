@@ -3,38 +3,129 @@
 import SourceHeap;
 import SourceExt;
 import SourceStack;
+import SourcesCommon;
 
 using namespace hfog::MemoryUtils::Literals;
+
+static_assert(hfog::Sources::CtSource<hfog::Sources::Heap<hfog::GarbageWriter::Default>>);
+static_assert(hfog::Sources::CtSource<hfog::Sources::External<hfog::GarbageWriter::Default>>);
+static_assert(hfog::Sources::CtSource<hfog::Sources::Stack<128_B, hfog::GarbageWriter::Default>>);
 
 TEST(Sources, tsHeapSource)
 {
 
-	hfog::Sources::Heap heapSource;
+	hfog::Sources::Heap<hfog::GarbageWriter::IncDecWriter> heapSource;
 
-	EXPECT_EQ(heapSource.getNumOfAllocatedBytes(), 0_B);
 	{
-		const auto memBlock{ heapSource.allocate(32) };
+		const auto memBlock{ heapSource.getMemory(0, 32_B) };
 		EXPECT_NE(memBlock.ptr, nullptr);
 		EXPECT_EQ(memBlock.size, 32_B);
-		EXPECT_EQ(heapSource.getNumOfAllocatedBytes(), 32_B);
-		heapSource.deallocate(memBlock);
-		EXPECT_EQ(heapSource.getNumOfAllocatedBytes(), 0_B);
+		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0, 32_B, 0x01));
+		heapSource.releaseMemory(memBlock);
 	}
 
 	{
-		const auto memBlock{ heapSource.allocate(18) };
+		const auto memBlock{ heapSource.getMemory(0, 18_B) };
 		EXPECT_NE(memBlock.ptr, nullptr);
 		EXPECT_EQ(memBlock.size, 18_B);
-		EXPECT_EQ(heapSource.getNumOfAllocatedBytes(), 18_B);
-		heapSource.deallocate(memBlock);
-		EXPECT_EQ(heapSource.getNumOfAllocatedBytes(), 0_B);
+		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0, 18_B, 0x01));
+		heapSource.releaseMemory(memBlock);
+
+		const auto memBlock2{ heapSource.getMemory(18_B, 18_B) };
+		EXPECT_NE(memBlock2.ptr, nullptr);
+		EXPECT_EQ(memBlock2.size, 18_B);
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0, 18_B, 0x01));
+		heapSource.releaseMemory(memBlock2);
+
 	}
 
 	{
-		const auto memBlock{ heapSource.allocate(0) };
-		EXPECT_EQ(memBlock.ptr, nullptr);
+		const auto memBlock{ heapSource.getMemory(0_B, 0_B) };
 		EXPECT_EQ(memBlock.size, 0_B);
-		EXPECT_EQ(heapSource.getNumOfAllocatedBytes(), 0_B);
+		heapSource.releaseMemory(memBlock);
+	}
+
+	//getMemory garantees that it returns initialized memory with garbageWriter write value (0xFA)
+	//Also it would write clear value (0xAF) when memory been released to source
+	//But after deallocation it cannot garantee that data in memory block stay the same (0xAF)
+	//	so we cannot check that
+
+	//Heap source uses offset parameter to find allocated memory island,
+	//	but it doesn't garantee that mamory would be allocated continuously 
+	{
+		const auto memBlock1{ heapSource.getMemory(0, 16_B) };
+		EXPECT_NE(memBlock1.ptr, nullptr);
+		EXPECT_EQ(memBlock1.size, 16_B);
+		EXPECT_TRUE(getValuesAre(memBlock1.ptr, 0, 16_B, 0x01));
+
+		const auto memBlock2{ heapSource.getMemory(16_B, 16_B) };
+		EXPECT_NE(memBlock2.ptr, nullptr);
+		EXPECT_EQ(memBlock2.size, 16_B);
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0, 16_B, 0x01));
+
+		heapSource.releaseMemory(memBlock1);
+		heapSource.releaseMemory(memBlock2);
+	}
+
+	{
+		const auto memBlock1{ heapSource.getMemory(0, 16_B) };
+		EXPECT_NE(memBlock1.ptr, nullptr);
+		EXPECT_EQ(memBlock1.size, 16_B);
+		EXPECT_TRUE(getValuesAre(memBlock1.ptr, 0, 16_B, 0x01));
+
+		const auto memBlock2{ heapSource.getMemory(16_B, 16_B) };
+		EXPECT_NE(memBlock2.ptr, nullptr);
+		EXPECT_EQ(memBlock2.size, 16_B);
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0, 16_B, 0x01));
+
+		const auto memBlock3{ heapSource.getMemory(32_B, 16_B) };
+		EXPECT_NE(memBlock3.ptr, nullptr);
+		EXPECT_EQ(memBlock3.size, 16_B);
+		EXPECT_TRUE(getValuesAre(memBlock3.ptr, 0, 16_B, 0x01));
+
+		heapSource.releaseMemory(memBlock3);
+		heapSource.releaseMemory(memBlock1);
+		heapSource.releaseMemory(memBlock2);
+	}
+
+	{
+		const auto memBlock1{ heapSource.getMemory(0, 16_B) };
+		EXPECT_NE(memBlock1.ptr, nullptr);
+		EXPECT_EQ(memBlock1.size, 16_B);
+		EXPECT_TRUE(getValuesAre(memBlock1.ptr, 0, 16_B, 0x01));
+
+		const auto memBlock2{ heapSource.getMemory(16_B, 16_B) };
+		EXPECT_NE(memBlock2.ptr, nullptr);
+		EXPECT_EQ(memBlock2.size, 16_B);
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0, 16_B, 0x01));
+
+		const auto memBlock3{ heapSource.getMemory(32_B, 16_B) };
+		EXPECT_NE(memBlock3.ptr, nullptr);
+		EXPECT_EQ(memBlock3.size, 16_B);
+		EXPECT_TRUE(getValuesAre(memBlock3.ptr, 0, 16_B, 0x01));
+
+		heapSource.releaseAllMemory();
+
+		const auto memBlock4{ heapSource.getMemory(0, 16_B) };
+		EXPECT_NE(memBlock4.ptr, nullptr);
+		EXPECT_EQ(memBlock4.size, 16_B);
+		EXPECT_TRUE(getValuesAre(memBlock4.ptr, 0, 16_B, 0x01));
+
+		heapSource.releaseAllMemory();
+	}
+
+	{
+		const auto memBlock1{ heapSource.getMemory(0, 16_B) };
+		EXPECT_NE(memBlock1.ptr, nullptr);
+		EXPECT_EQ(memBlock1.size, 16_B);
+		EXPECT_TRUE(getValuesAre(memBlock1.ptr, 0, 16_B, 0x01));
+
+		const auto memBlock2{ heapSource.getMemory(0_B, 16_B) };
+		EXPECT_EQ(memBlock2.ptr, memBlock1.ptr);
+		EXPECT_EQ(memBlock2.size, 16_B);
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0, 16_B, 0x02));
+
+		heapSource.releaseAllMemory();
 	}
 
 }
@@ -42,79 +133,165 @@ TEST(Sources, tsHeapSource)
 TEST(Sources, tsExtSource)
 {
 
-	std::byte extBuffer[64_B];
+	byte_t extBuffer[64_B];
 	std::memset(extBuffer, 0, sizeof(extBuffer));
 
 	hfog::MemoryBlock extMemBlock;
 	extMemBlock.ptr = extBuffer;
 	extMemBlock.size = 32_B;
 
-	hfog::Sources::External<16> extSource(extMemBlock);
+	hfog::Sources::External<hfog::GarbageWriter::ByteWriter<0xFA, 0xAF>> extSource(extMemBlock);
 
 	{
-		const auto memBlock{ extSource.allocate(16_B, 16_B) };
+		const auto memBlock{ extSource.getMemory(16_B, 16_B) };
+		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0, 16_B, 0xFA));
 		EXPECT_EQ(memBlock.ptr, extMemBlock.ptr + 16_B);
-		EXPECT_EQ(memBlock.size, size_t(16_B));
-		extSource.deallocate(memBlock);
+		EXPECT_EQ(memBlock.size, 16_B);
+		extSource.releaseMemory(memBlock);
+		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0, 16_B, 0xAF));
 	}
 
-//	{
-//		const auto memBlock{ heapSource.allocate(18) };
-//		EXPECT_NE(memBlock.ptr, nullptr);
-//		EXPECT_EQ(memBlock.size, size_t(32));
-//		heapSource.deallocate(memBlock);
-//	}
+	{
+		const auto memBlock{ extSource.getMemory(16_B, 16_B) };
+		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0, 16_B, 0xFA));
+		EXPECT_EQ(memBlock.ptr, extMemBlock.ptr + 16_B);
+		EXPECT_EQ(memBlock.size, 16_B);
+
+		const auto memBlock2{ extSource.getMemory(0_B, 16_B) };
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0, 16_B, 0xFA));
+		EXPECT_EQ(memBlock2.ptr, extMemBlock.ptr);
+		EXPECT_EQ(memBlock2.size, 16_B);
+
+		extSource.releaseMemory(memBlock);
+		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0, 16_B, 0xAF));
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0, 16_B, 0xFA));
+
+		extSource.releaseMemory(memBlock2);
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0, 16_B, 0xAF));
+
+	}
+
+	{
+		const auto memBlock{ extSource.getMemory(16_B, 16_B) };
+		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0, 16_B, 0xFA));
+		EXPECT_EQ(memBlock.ptr, extMemBlock.ptr + 16_B);
+		EXPECT_EQ(memBlock.size, 16_B);
+
+		const auto memBlock2{ extSource.getMemory(0_B, 16_B) };
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0, 16_B, 0xFA));
+		EXPECT_EQ(memBlock2.ptr, extMemBlock.ptr);
+		EXPECT_EQ(memBlock2.size, 16_B);
+
+		extSource.releaseAllMemory();
+		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0, 16_B, 0xAF));
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0, 16_B, 0xAF));
+
+	}
+
+	{
+		const auto memBlock{ extSource.getMemory(16_B, 32_B) };
+		EXPECT_EQ(memBlock.ptr, nullptr);
+		EXPECT_EQ(memBlock.size, 0_B);
+	}
 
 }
 
 TEST(Sources, tsStackSource)
 {
 
-	hfog::Sources::Stack<128_B, 16_B> stackSource;
+	hfog::Sources::Stack<128_B, hfog::GarbageWriter::ByteWriter<0xFA, 0xAF>> stackSource;
 
 	{
-		const auto memBlock{ stackSource.allocate(mem_t(0_B), mem_t(16_B)) };
-		EXPECT_EQ(memBlock.ptr, reinterpret_cast<std::byte*>(&stackSource));
-		EXPECT_EQ(memBlock.size, size_t(16_B));
-		stackSource.deallocate(memBlock);
+		const auto memBlock{ stackSource.getMemory(0_B, 16_B) };
+		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0, 16_B, 0xFA));
+		EXPECT_EQ(memBlock.ptr, reinterpret_cast<byte_t*>(&stackSource));
+		EXPECT_EQ(memBlock.size, 16_B);
+		stackSource.releaseMemory(memBlock);
+		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0, 16_B, 0xAF));
 	}
 	{
 
-		const auto memBlock{ stackSource.allocate(mem_t(0_B), mem_t(16_B)) };
-		EXPECT_EQ(memBlock.ptr, reinterpret_cast<std::byte*>(&stackSource));
-		EXPECT_EQ(memBlock.size, size_t(16_B));
+		const auto memBlock{ stackSource.getMemory(0_B, 16_B) };
+		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0, 16_B, 0xFA));
+		EXPECT_EQ(memBlock.ptr, reinterpret_cast<byte_t*>(&stackSource));
+		EXPECT_EQ(memBlock.size, 16_B);
 
-		const auto memBlock2{ stackSource.allocate(mem_t(16_B), mem_t(16_B)) };
-		EXPECT_EQ(memBlock2.ptr, reinterpret_cast<std::byte*>(&stackSource) + 16_B);
-		EXPECT_EQ(memBlock2.size, size_t(16_B));
+		const auto memBlock2{ stackSource.getMemory(16_B, 16_B) };
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0, 16_B, 0xFA));
+		EXPECT_EQ(memBlock2.ptr, reinterpret_cast<byte_t*>(&stackSource) + 16_B);
+		EXPECT_EQ(memBlock2.size, 16_B);
 
-		stackSource.deallocate(memBlock);
-		stackSource.deallocate(memBlock2);
+		stackSource.releaseMemory(memBlock);
+		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0, 16_B, 0xAF));
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0, 16_B, 0xFA));
+		stackSource.releaseMemory(memBlock2);
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0, 16_B, 0xAF));
 
 	}
 
 	{
-		const auto memBlock{ stackSource.allocate(mem_t(0_B), mem_t(200_B)) };
+		const auto memBlock{ stackSource.getMemory(0_B, 200_B) };
 		EXPECT_EQ(memBlock.ptr, nullptr);
-		EXPECT_EQ(memBlock.size, size_t(0));
+		EXPECT_EQ(memBlock.size, 0_B);
 	}
 
 	{
 
-		const auto memBlock{ stackSource.allocate(mem_t(16_B), mem_t(64_B)) };
-		EXPECT_EQ(memBlock.ptr, reinterpret_cast<std::byte*>(&stackSource) + mem_t(16_B));
-		EXPECT_EQ(memBlock.size, size_t(64_B));
+		const auto memBlock{ stackSource.getMemory(16_B, 64_B) };
+		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0, 64_B, 0xFA));
+		EXPECT_EQ(memBlock.ptr, reinterpret_cast<byte_t*>(&stackSource) + 16_B);
+		EXPECT_EQ(memBlock.size, 64_B);
 
-		const auto memBlock2{ stackSource.allocate(mem_t(64_B), mem_t(128_B)) };
+		const auto memBlock2{ stackSource.getMemory(64_B, 128_B) };
 		EXPECT_EQ(memBlock2.ptr, nullptr);
-		EXPECT_EQ(memBlock2.size, size_t(0));
+		EXPECT_EQ(memBlock2.size, 0_B);
 
-		stackSource.deallocate(memBlock);
+		stackSource.releaseMemory(memBlock);
+		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0, 64_B, 0xAF));
 
-		const auto memBlock3{ stackSource.allocate(mem_t(0_B), mem_t(128_B)) };
-		EXPECT_EQ(memBlock3.ptr, reinterpret_cast<std::byte*>(&stackSource));
-		EXPECT_EQ(memBlock3.size, size_t(128_B));
-		stackSource.deallocate(memBlock3);
+		const auto memBlock3{ stackSource.getMemory(0_B, 128_B) };
+		EXPECT_TRUE(getValuesAre(memBlock3.ptr, 0, 128_B, 0xFA));
+		EXPECT_EQ(memBlock3.ptr, reinterpret_cast<byte_t*>(&stackSource));
+		EXPECT_EQ(memBlock3.size, 128_B);
+		stackSource.releaseMemory(memBlock3);
+		EXPECT_TRUE(getValuesAre(memBlock3.ptr, 0, 128_B, 0xAF));
+
+	}
+
+	{
+		const auto memBlock{ stackSource.getMemory(16_B, 16_B) };
+		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0, 16_B, 0xFA));
+		EXPECT_EQ(memBlock.ptr, reinterpret_cast<byte_t*>(&stackSource) + 16_B);
+		EXPECT_EQ(memBlock.size, 16_B);
+
+		const auto memBlock2{ stackSource.getMemory(0_B, 16_B) };
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0, 16_B, 0xFA));
+		EXPECT_EQ(memBlock2.ptr, reinterpret_cast<byte_t*>(&stackSource));
+		EXPECT_EQ(memBlock2.size, 16_B);
+
+		stackSource.releaseMemory(memBlock);
+		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0, 16_B, 0xAF));
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0, 16_B, 0xFA));
+
+		stackSource.releaseMemory(memBlock2);
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0, 16_B, 0xAF));
+
+	}
+
+	{
+		const auto memBlock{ stackSource.getMemory(16_B, 16_B) };
+		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0, 16_B, 0xFA));
+		EXPECT_EQ(memBlock.ptr, reinterpret_cast<byte_t*>(&stackSource) + 16_B);
+		EXPECT_EQ(memBlock.size, 16_B);
+
+		const auto memBlock2{ stackSource.getMemory(0_B, 16_B) };
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0, 16_B, 0xFA));
+		EXPECT_EQ(memBlock2.ptr, reinterpret_cast<byte_t*>(&stackSource));
+		EXPECT_EQ(memBlock2.size, 16_B);
+
+		stackSource.releaseAllMemory();
+		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0, 16_B, 0xAF));
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0, 16_B, 0xAF));
 
 	}
 
