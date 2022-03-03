@@ -2,7 +2,7 @@
 
 #include <cstddef>
 
-static bool getValuesAre(auto* buffer, size_t beginId, size_t endId, auto val)
+static bool getValuesAre(auto* buffer, auto beginId, auto endId, auto val)
 {
 	auto currId{ beginId };
 	while (currId != endId)
