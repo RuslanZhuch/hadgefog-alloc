@@ -37,7 +37,9 @@
     <ClInclude Include="TestUtils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AllocAlgorithms.cpp" />
+    <ClCompile Include="AllocAlgorithmNull.cpp" />
+    <ClCompile Include="AllocAlgorithmsLinear.cpp" />
+    <ClCompile Include="AllocAlgorithmsStack.cpp" />
     <ClCompile Include="GarbageWriter.cpp" />
     <ClCompile Include="memoryBlock.cpp" />
     <ClCompile Include="MemoryUtils.cpp" />
@@ -48,6 +50,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Sources.cpp" />
+    <ClCompile Include="StructureFallback.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\hadgefog-alloc.vcxproj">
