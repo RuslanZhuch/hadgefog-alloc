@@ -13,6 +13,8 @@
 #pragma warning(disable : 4625)
 #pragma warning(disable : 4514)
 #pragma warning(disable : 4626)
+#pragma warning(disable : 5026)
+#pragma warning(disable : 5027)
 
 #include "gtest/gtest.h"
 
