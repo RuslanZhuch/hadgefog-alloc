@@ -7,7 +7,7 @@ export import GarbageWriter;
 export namespace hfog::Sources
 {
 	
-	template <mem_t buffSize, GarbageWriter::CtGarbageWriter<char> garbageWriterOp = GarbageWriter::Default>
+	template <mem_t buffSize, GarbageWriter::CtGarbageWriter<byte_t> garbageWriterOp = GarbageWriter::Default>
 	class Stack
 	{
 
@@ -21,9 +21,9 @@ export namespace hfog::Sources
 				return memBlock;
 
 			memBlock.ptr = memBuffer + offset;
-			if (memBlock.ptr != nullptr)
-				memBlock.size = size;
+			memBlock.size = size;
 
+			garbageWriterOp::init(memBlock.ptr, 0, size);
 			garbageWriterOp::write(memBlock.ptr, 0, size);
 
 			return memBlock;
@@ -38,6 +38,18 @@ export namespace hfog::Sources
 		void releaseAllMemory()
 		{
 			garbageWriterOp::clear(this->memBuffer, 0, buffSize);
+		}
+
+		[[nodiscard]] mem_t getOffset(byte_t* ptr)
+		{
+			auto bInRange{ ptr != nullptr };
+			auto memPtr{ reinterpret_cast<byte_t*>(&this->memBuffer) };
+			bInRange &= (ptr >= memPtr);
+			bInRange &= ((memPtr + buffSize) - ptr > 0);
+			if (!bInRange)
+				return invalidMem_t;
+
+			return static_cast<mem_t>(ptr - memPtr);
 		}
 
 	private:

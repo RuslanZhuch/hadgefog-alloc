@@ -8,7 +8,7 @@ export namespace hfog::Sources
 {
 
 
-	template <GarbageWriter::CtGarbageWriter<char> garbageWriterOp = GarbageWriter::Default>
+	template <GarbageWriter::CtGarbageWriter<byte_t> garbageWriterOp = GarbageWriter::Default>
 	class External
 	{
 
@@ -22,16 +22,13 @@ export namespace hfog::Sources
 
 			MemoryBlock memBlock;
 
-			if (this->extMemoryBlock.ptr == nullptr)
-				return memBlock;
-
 			if (offset + size > this->extMemoryBlock.size)
 				return memBlock;
 
 			memBlock.ptr = extMemoryBlock.ptr + offset;
-			if (memBlock.ptr != nullptr)
-				memBlock.size = size;
+			memBlock.size = size;
 
+			garbageWriterOp::init(memBlock.ptr, 0, size);
 			garbageWriterOp::write(memBlock.ptr, 0, size);
 
 			return memBlock;
@@ -46,6 +43,19 @@ export namespace hfog::Sources
 		void releaseAllMemory()
 		{
 			garbageWriterOp::clear(this->extMemoryBlock.ptr, 0, this->extMemoryBlock.size);
+		}
+
+		[[nodiscard]] mem_t getOffset(byte_t* ptr)
+		{
+
+			auto bInRange{ ptr != nullptr };
+			bInRange &= (ptr >= this->extMemoryBlock.ptr);
+			bInRange &= ((this->extMemoryBlock.ptr + this->extMemoryBlock.size) - ptr > 0);
+			if (!bInRange)
+				return invalidMem_t;
+
+			return static_cast<mem_t>(ptr - this->extMemoryBlock.ptr);
+
 		}
 
 	private:

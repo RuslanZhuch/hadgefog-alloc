@@ -17,7 +17,7 @@ using namespace hfog::MemoryUtils::Literals;
 export namespace hfog::Sources
 {
 
-	template<GarbageWriter::CtGarbageWriter<char> garbageWriterOp = GarbageWriter::Default>
+	template<GarbageWriter::CtGarbageWriter<byte_t> garbageWriterOp = GarbageWriter::Default>
 	class Heap
 	{
 		struct MemIslandPtr
@@ -109,6 +109,21 @@ export namespace hfog::Sources
 			std::free(this->memoryIslands);
 			this->memoryIslands = nullptr;
 			this->lastMemoryIsland = nullptr;
+		}
+
+		[[nodiscard]] mem_t getOffset(byte_t* ptr)
+		{
+
+			auto currIsland{ this->memoryIslands };
+			while (currIsland != nullptr)
+			{
+				if (currIsland->island == ptr)
+					return currIsland->offset;
+				currIsland = currIsland->next;
+			}
+
+			return invalidMem_t;
+
 		}
 
 	private:
