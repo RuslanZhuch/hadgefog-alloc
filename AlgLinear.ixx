@@ -7,13 +7,18 @@ import SourcesCommon;
 export namespace hfog::Algorithms
 {
 
-	template <Sources::CtSource Source, mem_t alignment, typename alignFunc = hfog::MemoryUtils::align<alignment>>
+	template <Sources::CtSource Source, mem_t alignment, MemoryUtils::CtAlign alignFunc = MemoryUtils::Align<alignment>>
 	class Linear
 	{
 	public:
-		MemoryBlock allocate(mem_t numOfBytes)
+		template <typename ... Args>
+		Linear(Args ... args) noexcept
+			:source(args...)
+		{}
+
+		[[nodiscard]] MemoryBlock allocate(mem_t numOfBytes) noexcept
 		{
-			const auto alignNumOfBytes{ alignFunc()(numOfBytes) };
+			const auto alignNumOfBytes{ alignFunc::compute(numOfBytes) };
 			const auto outMemory{ this->source.getMemory(this->currMemPoint, alignNumOfBytes) };
 			if (outMemory.ptr != nullptr)
 			{
@@ -22,11 +27,16 @@ export namespace hfog::Algorithms
 			return outMemory;
 		}
 
-		void deallocate([[maybe_unused]] MemoryBlock block)
+		void deallocate([[maybe_unused]] MemoryBlock block) noexcept
 		{
 			this->source.releaseAllMemory();
 			this->currMemPoint = 0;
 		}
+
+//		[[nodiscard]] bool getIsOwner(byte_t* ptr)
+//		{
+//
+//		}
 
 	private:
 		Source source;
