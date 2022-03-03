@@ -1,7 +1,7 @@
 module;
-#include <memory>
+#include <cstring>
 export module MemoryBlock;
-import MemoryUtils;
+export import MemoryUtils;
 
 export namespace hfog
 {
@@ -10,7 +10,7 @@ export namespace hfog
 	{
 
 		byte_t* ptr{ nullptr };
-		size_t size{ 0 };
+		mem_t size{ 0 };
 
 	};
 

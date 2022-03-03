@@ -1,42 +1,56 @@
+module;
+#include <utility>
+#include <concepts>
+#include <limits>
+
 export module MemoryUtils;
 
 export using mem_t = size_t;
 export using byte_t = unsigned char;
+export inline constexpr auto invalidMem_t = std::numeric_limits<mem_t>::max();
 
 export namespace hfog::MemoryUtils::Literals
 {
 
-	consteval mem_t operator ""_B(size_t in) noexcept
+	using litInput_t = unsigned long long;
+
+	consteval mem_t operator ""_B(litInput_t in) noexcept
 	{
-		return in;
+		return static_cast<mem_t>(in);
 	}
-	consteval mem_t operator ""_kB(size_t in) noexcept
+	consteval mem_t operator ""_kB(litInput_t in) noexcept
 	{
-		return in * 1024;
+		return static_cast<mem_t>(in) * 1024;
 	}
-	consteval mem_t operator ""_MB(size_t in) noexcept
+	consteval mem_t operator ""_MB(litInput_t in) noexcept
 	{
-		return in * 1024 * 1024;
+		return static_cast<mem_t>(in) * 1024 * 1024;
 	}
-	consteval mem_t operator ""_GB(size_t in) noexcept
+	consteval mem_t operator ""_GB(litInput_t in) noexcept
 	{
-		return in * 1024 * 1024 * 1024;
+		return static_cast<mem_t>(in) * 1024 * 1024 * 1024;
 	}
-	consteval mem_t operator ""_TB(size_t in) noexcept
+	consteval mem_t operator ""_TB(litInput_t in) noexcept
 	{
-		return in * 1024 * 1024 * 1024 * 1024;
+		return static_cast<mem_t>(in) * 1024 * 1024 * 1024 * 1024;
 	}
 };
 
 export namespace hfog::MemoryUtils
 {
 
-	template <size_t alignment>
-	class align
+	template<typename T>
+	concept CtAlign = requires(T)
+	{
+		{T::compute(std::declval<mem_t>())} -> std::convertible_to<mem_t>;
+	};
+
+	template <mem_t alignment>
+	class Align
 	{
 	public:
 		static_assert(alignment > 0, "Alignment must be > 0");
-		[[nodiscard]] constexpr size_t operator()(size_t in) const noexcept
+		[[nodiscard]] static constexpr mem_t compute(mem_t in) noexcept
 		{
 			return ((in + alignment - 1) / alignment) * alignment;
 		}

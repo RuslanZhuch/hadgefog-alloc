@@ -4,6 +4,8 @@
 
 import MemoryBlock;
 
+using namespace hfog::MemoryUtils::Literals;
+
 TEST(MemoryBlock, tsMemBlockStruct)
 {
 
@@ -12,6 +14,6 @@ TEST(MemoryBlock, tsMemBlockStruct)
 
 	hfog::MemoryBlock memBlock;
 	EXPECT_EQ(memBlock.ptr, nullptr);
-	EXPECT_EQ(memBlock.size, size_t(0));
+	EXPECT_EQ(memBlock.size, 0_B);
 
 }
