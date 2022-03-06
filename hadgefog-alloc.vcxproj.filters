@@ -52,5 +52,8 @@
     <ClCompile Include="StructureFallback.ixx">
       <Filter>lib\Structures</Filter>
     </ClCompile>
+    <ClCompile Include="hfogCore.ixx">
+      <Filter>lib</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
