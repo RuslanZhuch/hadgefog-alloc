@@ -27,15 +27,27 @@ export namespace hfog::Algorithms
 			return outMemory;
 		}
 
-		void deallocate(MemoryBlock block) noexcept
+		void deallocate(const MemoryBlock& block) noexcept
 		{
-			const auto memoryPoint{ this->currMemPoint - block.size };
-			const auto sourcePtr{ this->source.getMemory(memoryPoint, block.size) };
-			if (sourcePtr.ptr == block.ptr)
+			const auto blockPtr{ block.ptr };
+			const auto blockSize{ block.size };
+
+			const auto memoryPoint{ this->currMemPoint - blockSize };
+			const auto sourcePtr{ this->source.getMemory(memoryPoint, blockSize) };
+
+			//Remove branch for speedup
+			//Doest solve x64 slowdown
+			if (sourcePtr.ptr == blockPtr)
 			{
-				this->source.releaseMemory(block);
-				currMemPoint = memoryPoint;
+				this->source.releaseMemory(sourcePtr);
+				this->currMemPoint = memoryPoint;
 			}
+		}
+
+		[[nodiscard]] bool getIsOwner(byte_t* ptr) noexcept
+		{
+			const auto offset{ this->source.getOffset(ptr) };
+			return offset < this->currMemPoint;
 		}
 
 	private:

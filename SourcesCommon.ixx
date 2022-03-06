@@ -15,6 +15,7 @@ export namespace hfog::Sources
 		{s.getMemory(std::declval<mem_t>(), std::declval<mem_t>())} -> std::convertible_to<MemoryBlock>;
 		{s.releaseMemory(std::declval<MemoryBlock>())} -> std::convertible_to<void>;
 		{s.releaseAllMemory()} -> std::convertible_to<void>;
+		{s.getOffset(std::declval<byte_t*>())} -> std::convertible_to<mem_t>;
 	};
 
 };

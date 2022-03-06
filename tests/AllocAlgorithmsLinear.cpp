@@ -6,7 +6,13 @@ import SourceHeap;
 import SourceExt;
 import SourceStack;
 
+import hfogCore;
+
 using namespace hfog::MemoryUtils::Literals;
+
+static_assert(hfog::CtAllocator<hfog::Algorithms::Linear<hfog::Sources::Heap<hfog::GarbageWriter::Default>, 16_B>>);
+static_assert(hfog::CtAllocator<hfog::Algorithms::Linear<hfog::Sources::External<hfog::GarbageWriter::Default>, 16_B>>);
+static_assert(hfog::CtAllocator<hfog::Algorithms::Linear<hfog::Sources::Stack<128_B, hfog::GarbageWriter::Default>, 16_B>>);
 
 TEST(AllocAlgorithms, tsLinearHeap)
 {
@@ -75,12 +81,12 @@ TEST(AllocAlgorithms, tsLinearExt)
 	{
 		const auto memBlock{ algLinear.allocate(32_B) };
 		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 32_B, 0xFA));
-		//EXPECT_TRUE(algLinear.getIsOwner(memBlock.ptr));
+		EXPECT_TRUE(algLinear.getIsOwner(memBlock.ptr));
 		EXPECT_NE(memBlock.ptr, nullptr);
 		EXPECT_EQ(memBlock.size, 32_B);
 		algLinear.deallocate(memBlock);
 		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 32_B, 0xAF));
-		//EXPECT_FALSE(algLinear.getIsOwner(memBlock.ptr));
+		EXPECT_FALSE(algLinear.getIsOwner(memBlock.ptr));
 	}
 	{
 		const auto memBlock{ algLinear.allocate(18_B) };
@@ -130,27 +136,27 @@ TEST(AllocAlgorithms, tsLinearExt)
 	{
 		const auto memBlock{ algLinear.allocate(40_B) };
 		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 48_B, 0xFA));
-		//EXPECT_TRUE(algLinear.getIsOwner(memBlock.ptr));
+		EXPECT_TRUE(algLinear.getIsOwner(memBlock.ptr));
 		EXPECT_NE(memBlock.ptr, nullptr);
 		EXPECT_EQ(memBlock.size, 48_B);
 
 		const auto memBlock2{ algLinear.allocate(40_B) };
 		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0_B, 48_B, 0xFA));
-		//EXPECT_TRUE(algLinear.getIsOwner(memBlock2.ptr));
+		EXPECT_TRUE(algLinear.getIsOwner(memBlock2.ptr));
 		EXPECT_NE(memBlock2.ptr, nullptr);
 		EXPECT_EQ(memBlock2.size, 48_B);
 
 		algLinear.deallocate(memBlock);
 		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 48_B, 0xAF));
 		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0_B, 48_B, 0xAF));
-		//EXPECT_FALSE(algLinear.getIsOwner(memBlock.ptr));
-		//EXPECT_FALSE(algLinear.getIsOwner(memBlock2.ptr));
+		EXPECT_FALSE(algLinear.getIsOwner(memBlock.ptr));
+		EXPECT_FALSE(algLinear.getIsOwner(memBlock2.ptr));
 	}
 
-	//EXPECT_FALSE(algLinear.getIsOwner(nullptr));
+	EXPECT_FALSE(algLinear.getIsOwner(nullptr));
 
-	//byte_t val{ 42 };
-	//EXPECT_FALSE(algLinear.getIsOwner(&val));
+	byte_t val{ 42 };
+	EXPECT_FALSE(algLinear.getIsOwner(&val));
 
 }
 

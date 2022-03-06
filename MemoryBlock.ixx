@@ -1,5 +1,5 @@
 module;
-#include <cstring>
+#include <utility>
 export module MemoryBlock;
 export import MemoryUtils;
 

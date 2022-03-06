@@ -4,6 +4,8 @@ export import MemoryBlock;
 export import MemoryUtils;
 export import GarbageWriter;
 
+import hfogCore;
+
 export namespace hfog::Sources
 {
 
@@ -17,25 +19,36 @@ export namespace hfog::Sources
 			:extMemoryBlock(extMemory)
 		{}
 
-		MemoryBlock getMemory(mem_t offset, size_t size)
+		MemoryBlock getMemory(mem_t offset, mem_t size)
 		{
 
 			MemoryBlock memBlock;
 
-			if (offset + size > this->extMemoryBlock.size)
-				return memBlock;
+//			if constexpr (bX64)
+//			{
+//				const auto bInRange{ offset + size <= this->extMemoryBlock.size };
+//
+//				byte_t* path[] = { nullptr, this->extMemoryBlock.ptr + offset };
+//				memBlock.ptr = path[bInRange];
+//				memBlock.size = size * bInRange;
+//			}
+//			else
+//			{
+				if (offset + size > this->extMemoryBlock.size)
+					return memBlock;
 
-			memBlock.ptr = extMemoryBlock.ptr + offset;
-			memBlock.size = size;
+				memBlock.ptr = this->extMemoryBlock.ptr + offset;
+				memBlock.size = size;
+//			}
 
-			garbageWriterOp::init(memBlock.ptr, 0, size);
-			garbageWriterOp::write(memBlock.ptr, 0, size);
-
+			garbageWriterOp::init(memBlock.ptr, 0, memBlock.size);
+			garbageWriterOp::write(memBlock.ptr, 0, memBlock.size);
+			
 			return memBlock;
 
 		}
 
-		void releaseMemory(MemoryBlock memBlock)
+		void releaseMemory(const MemoryBlock& memBlock)
 		{
 			garbageWriterOp::clear(memBlock.ptr, 0, memBlock.size);
 		}

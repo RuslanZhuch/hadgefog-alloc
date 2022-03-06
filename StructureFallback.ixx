@@ -3,10 +3,12 @@ export module StructureFallback;
 import MemoryBlock;
 import MemoryUtils;
 
+import hfogCore;
+
 export namespace hfog::Structures
 {
 
-	template <typename PrimaryAlg, typename SecondaryAlg>
+	template <CtAllocator PrimaryAlg, CtAllocator SecondaryAlg>
 	class Fallback
 	{
 
@@ -21,14 +23,20 @@ export namespace hfog::Structures
 
 		void deallocate(MemoryBlock memBlock) noexcept
 		{
+
 			if (this->primary.getIsOwner(memBlock.ptr))
 			{
 				this->primary.deallocate(memBlock);
+				return;
 			}
-			else if (this->secondary.getIsOwner(memBlock.ptr))
-			{
-				this->secondary.deallocate(memBlock);
-			}
+
+			this->secondary.deallocate(memBlock);
+			
+		}
+
+		[[nodiscard]] bool getIsOwner(byte_t* ptr) noexcept
+		{
+			return this->primary.getIsOwner(ptr) || this->secondary.getIsOwner(ptr);
 		}
 
 	private:

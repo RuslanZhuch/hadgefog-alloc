@@ -26,6 +26,7 @@ export namespace hfog::Sources
 			byte_t* island{ nullptr };
 			MemIslandPtr* next{ nullptr };
 		};
+
 	public:
 		[[nodiscard]] MemoryBlock getMemory(mem_t offset, mem_t size) noexcept
 		{
@@ -66,12 +67,10 @@ export namespace hfog::Sources
 
 		}
 
-		void releaseMemory(MemoryBlock memBlock) noexcept
+		void releaseMemory(const MemoryBlock& memBlock) noexcept
 		{
 
 			auto currIslandPtr{ this->memoryIslands };
-			if (currIslandPtr == nullptr)
-				return;
 			MemIslandPtr* prevIslandPtr{ nullptr };
 
 			while (currIslandPtr != nullptr)
@@ -111,7 +110,7 @@ export namespace hfog::Sources
 			this->lastMemoryIsland = nullptr;
 		}
 
-		[[nodiscard]] mem_t getOffset(byte_t* ptr)
+		[[nodiscard]] mem_t getOffset(byte_t* ptr) const noexcept
 		{
 
 			auto currIsland{ this->memoryIslands };

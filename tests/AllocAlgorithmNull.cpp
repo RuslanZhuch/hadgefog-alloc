@@ -3,7 +3,11 @@
 import AlgNull;
 import MemoryUtils;
 
+import hfogCore;
+
 using namespace hfog::MemoryUtils::Literals;
+
+static_assert(hfog::CtAllocator<hfog::Algorithms::Null>);
 
 TEST(AllocAlgorithms, tsNull)
 {

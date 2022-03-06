@@ -33,10 +33,11 @@ export namespace hfog::Algorithms
 			this->currMemPoint = 0;
 		}
 
-//		[[nodiscard]] bool getIsOwner(byte_t* ptr)
-//		{
-//
-//		}
+		[[nodiscard]] bool getIsOwner(byte_t* ptr)
+		{
+			const auto offset{ this->source.getOffset(ptr) };
+			return offset < this->currMemPoint;
+		}
 
 	private:
 		Source source;
