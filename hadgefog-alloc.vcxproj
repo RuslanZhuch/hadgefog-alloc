@@ -23,6 +23,7 @@
     <ClCompile Include="AlgNull.ixx" />
     <ClCompile Include="AlgStack.ixx" />
     <ClCompile Include="GarbageWriter.ixx" />
+    <ClCompile Include="Heap.ixx" />
     <ClCompile Include="hfogCore.ixx" />
     <ClCompile Include="MemoryBlock.ixx" />
     <ClCompile Include="MemoryUtils.ixx" />

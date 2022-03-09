@@ -41,6 +41,7 @@
     <ClCompile Include="AllocAlgorithmsLinear.cpp" />
     <ClCompile Include="AllocAlgorithmsStack.cpp" />
     <ClCompile Include="GarbageWriter.cpp" />
+    <ClCompile Include="hfogSupports.cpp" />
     <ClCompile Include="memoryBlock.cpp" />
     <ClCompile Include="MemoryUtils.cpp" />
     <ClCompile Include="pch.cpp">

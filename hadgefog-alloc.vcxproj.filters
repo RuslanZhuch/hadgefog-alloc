@@ -17,6 +17,9 @@
     <Filter Include="lib\Structures">
       <UniqueIdentifier>{93c76896-36bd-437e-a0d0-c5c5c2c1b931}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lib\Supports">
+      <UniqueIdentifier>{f4e85563-d40e-4653-893a-5bd6b39690e8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MemoryBlock.ixx">
@@ -54,6 +57,9 @@
     </ClCompile>
     <ClCompile Include="hfogCore.ixx">
       <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="Heap.ixx">
+      <Filter>lib\Supports</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
