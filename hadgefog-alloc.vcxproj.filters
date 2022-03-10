@@ -61,5 +61,8 @@
     <ClCompile Include="Heap.ixx">
       <Filter>lib\Supports</Filter>
     </ClCompile>
+    <ClCompile Include="AlgUnified.ixx">
+      <Filter>lib\Algorithms</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

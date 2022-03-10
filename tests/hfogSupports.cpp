@@ -9,6 +9,7 @@ TEST(Supports, tsMinHeap)
 
 	EXPECT_TRUE(minHeap.push(4));
 	EXPECT_EQ(minHeap.pick().value(), 4);
+	EXPECT_EQ(minHeap.pick().value(), 4);
 	minHeap.pop();
 	EXPECT_FALSE(minHeap.pick().has_value());
 	minHeap.pop();
