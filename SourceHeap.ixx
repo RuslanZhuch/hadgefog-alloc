@@ -88,6 +88,8 @@ export namespace hfog::Sources
 						if (this->memoryIslands == currIslandPtr)
 							this->memoryIslands = this->memoryIslands->next;
 					}
+					if (currIslandPtr == this->lastMemoryIsland)
+						this->lastMemoryIsland = prevIslandPtr;
 					std::free(currIslandPtr);
 					return;
 				}

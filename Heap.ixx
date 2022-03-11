@@ -53,7 +53,7 @@ export namespace hfog::Supports
 
 				const auto currValue{ this->buffer[currNodeId].value };
 				
-				const auto findMinChild = [currValue, currNodeId, this]()
+				const auto findMinChild = [&]()
 				{
 					T minValue{ currValue };
 					size_t minId{ currNodeId };

@@ -33,6 +33,7 @@
     <ClCompile Include="SourcesCommon.ixx" />
     <ClCompile Include="SourceStack.ixx" />
     <ClCompile Include="StructureFallback.ixx" />
+    <ClCompile Include="StructureSegregator.ixx" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

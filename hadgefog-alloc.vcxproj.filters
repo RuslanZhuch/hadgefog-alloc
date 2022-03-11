@@ -64,5 +64,8 @@
     <ClCompile Include="AlgUnified.ixx">
       <Filter>lib\Algorithms</Filter>
     </ClCompile>
+    <ClCompile Include="StructureSegregator.ixx">
+      <Filter>lib\Structures</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

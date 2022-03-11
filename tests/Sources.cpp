@@ -140,6 +140,54 @@ TEST(Sources, tsHeapSource)
 
 }
 
+
+TEST(Sources, tsHeapSourceReallocateLast)
+{
+
+	hfog::Sources::Heap<hfog::GarbageWriter::ByteWriter<0xFA, 0xAF>> heapSource;
+
+	{
+		const auto memBlock1{ heapSource.getMemory(0, 64_B) };
+		EXPECT_NE(memBlock1.ptr, nullptr);
+		EXPECT_EQ(memBlock1.size, 64_B);
+		EXPECT_TRUE(getValuesAre(memBlock1.ptr, 0_B, 64_B, 0xFA));
+		EXPECT_EQ(heapSource.getOffset(memBlock1.ptr), 0_B);
+
+		heapSource.releaseMemory(memBlock1);
+
+		const auto memBlock2{ heapSource.getMemory(0_B, 64_B) };
+		EXPECT_NE(memBlock2.ptr, nullptr);
+		EXPECT_EQ(memBlock2.size, 64_B);
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0_B, 64_B, 0xFA));
+		EXPECT_EQ(heapSource.getOffset(memBlock2.ptr), 0_B);
+
+	}
+
+	{
+		const auto memBlock1{ heapSource.getMemory(0, 64_B) };
+		EXPECT_NE(memBlock1.ptr, nullptr);
+		EXPECT_EQ(memBlock1.size, 64_B);
+		EXPECT_TRUE(getValuesAre(memBlock1.ptr, 0_B, 64_B, 0xFA));
+		EXPECT_EQ(heapSource.getOffset(memBlock1.ptr), 0_B);
+
+		const auto memBlock2{ heapSource.getMemory(64_B, 64_B) };
+		EXPECT_NE(memBlock2.ptr, nullptr);
+		EXPECT_EQ(memBlock2.size, 64_B);
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0_B, 64_B, 0xFA));
+		EXPECT_EQ(heapSource.getOffset(memBlock2.ptr),64_B);
+
+		heapSource.releaseMemory(memBlock2);
+
+		const auto memBlock3{ heapSource.getMemory(64_B, 64_B) };
+		EXPECT_NE(memBlock3.ptr, nullptr);
+		EXPECT_EQ(memBlock3.size, 64_B);
+		EXPECT_TRUE(getValuesAre(memBlock3.ptr, 0_B, 64_B, 0xFA));
+		EXPECT_EQ(heapSource.getOffset(memBlock3.ptr), 64_B);
+
+	}
+
+}
+
 TEST(Sources, tsExtSource)
 {
 
