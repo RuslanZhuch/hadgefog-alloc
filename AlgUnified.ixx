@@ -14,6 +14,9 @@ export namespace hfog::Algorithms
 	class Unified
 	{
 
+		static_assert(numOfSegments > 0);
+		static_assert(numOfChuncks > 0);
+
 		static constexpr auto maxBlockBytes{ alignment * numOfSegments };
 
 		struct Chunck
@@ -113,6 +116,8 @@ export namespace hfog::Algorithms
 		{
 			
 			const auto memOffset{ this->source.getOffset(block.ptr) };
+			this->source.releaseMemory(block);
+
 			const auto chunckId{ memOffset / maxBlockBytes };
 
 			auto currChunck{ &this->chuncks[chunckId] };
@@ -136,8 +141,21 @@ export namespace hfog::Algorithms
 
 		[[nodiscard]] bool getIsOwner(byte_t* ptr)
 		{
-			const auto offset{ this->source.getOffset(ptr) };
-			return offset < this->currMemPoint;
+
+			const auto checkMemoryOffset{ this->source.getOffset(ptr) };
+			const auto maxOffset{ alignment * numOfSegments * numOfChuncks };
+			if (checkMemoryOffset > maxOffset)
+				return false;
+
+			const auto chunckId{ checkMemoryOffset / maxBlockBytes };
+			const auto chunck{ &this->chuncks[chunckId] };
+			const auto relativeMemOffset{ checkMemoryOffset - chunck->beginMemoryOffset };
+
+			const auto occupiedSize{ maxBlockBytes - chunck->freeSpace };
+			const auto bOccupied{ relativeMemOffset < occupiedSize };
+
+			return bOccupied;
+
 		}
 
 	private:

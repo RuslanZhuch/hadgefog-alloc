@@ -53,6 +53,7 @@
     </ClCompile>
     <ClCompile Include="Sources.cpp" />
     <ClCompile Include="StructureFallback.cpp" />
+    <ClCompile Include="StructureSegregator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\hadgefog-alloc.vcxproj">
