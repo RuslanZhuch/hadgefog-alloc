@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="AlgLinear.ixx" />
     <ClCompile Include="AlgNull.ixx" />
+    <ClCompile Include="AlgPool.ixx" />
     <ClCompile Include="AlgStack.ixx" />
     <ClCompile Include="AlgUnified.ixx" />
     <ClCompile Include="GarbageWriter.ixx" />
