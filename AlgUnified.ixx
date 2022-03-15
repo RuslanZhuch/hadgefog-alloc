@@ -4,7 +4,7 @@ import MemoryUtils;
 import MemoryBlock;
 import SourcesCommon;
 
-static constexpr auto invalidEntryId_t{ invalidMem_t };
+inline constexpr auto invalidEntryId_t{ invalidMem_t };
 
 export namespace hfog::Algorithms
 {
@@ -61,6 +61,12 @@ export namespace hfog::Algorithms
 			this->tails[numOfSegments - 1] = &this->chuncks[numOfSegments - 1];
 
 		}
+
+		Unified(const Unified&) = delete;
+		Unified& operator=(const Unified&) = delete;
+
+		Unified(Unified&&) = default;
+		Unified& operator=(Unified&&) = default;
 
 		[[nodiscard]] MemoryBlock allocate(mem_t numOfBytes) noexcept
 		{
@@ -139,7 +145,7 @@ export namespace hfog::Algorithms
 
 		}
 
-		[[nodiscard]] bool getIsOwner(byte_t* ptr)
+		[[nodiscard]] bool getIsOwner(byte_t* ptr) const noexcept
 		{
 
 			const auto checkMemoryOffset{ this->source.getOffset(ptr) };
@@ -160,7 +166,7 @@ export namespace hfog::Algorithms
 
 	private:
 
-		void updateEntries()
+		void updateEntries() noexcept
 		{
 			for (int id{ numOfSegments - 2 }; id >= 0; --id)
 			{
@@ -171,7 +177,7 @@ export namespace hfog::Algorithms
 			}
 		}
 
-		void appendChunck(Chunck* currChunck, size_t entryId)
+		void appendChunck(Chunck* currChunck, size_t entryId) noexcept
 		{
 			if (this->tails[entryId] == nullptr)
 			{
@@ -187,7 +193,7 @@ export namespace hfog::Algorithms
 			this->updateEntries();
 		}
 
-		[[nodiscard]] mem_t computeEntryId(mem_t needBytes)
+		[[nodiscard]] mem_t computeEntryId(mem_t needBytes) const noexcept
 		{
 			if (needBytes == 0)
 				return invalidEntryId_t;

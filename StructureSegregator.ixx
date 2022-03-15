@@ -11,6 +11,13 @@ export namespace hfog::Structures
 	{
 
 	public:
+		Segregator() = default;
+		Segregator(const Segregator&) = delete;
+		Segregator& operator=(const Segregator&) = delete;
+
+		Segregator(Segregator&&) = default;
+		Segregator& operator=(Segregator&&) = default;
+
 		[[nodiscard]] MemoryBlock allocate(mem_t size) noexcept
 		{
 
@@ -31,7 +38,7 @@ export namespace hfog::Structures
 
 		}
 
-		[[nodiscard]] bool getIsOwner(byte_t* ptr) noexcept
+		[[nodiscard]] bool getIsOwner(byte_t* ptr) const noexcept
 		{
 
 			return this->left.getIsOwner(ptr) || this->right.getIsOwner(ptr);

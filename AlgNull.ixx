@@ -8,15 +8,22 @@ export namespace hfog::Algorithms
 	class Null
 	{
 	public:
-		[[nodiscard]] MemoryBlock allocate([[maybe_unused]] mem_t numOfBytes) noexcept
+		Null() = default;
+		Null(const Null&) = delete;
+		Null& operator=(const Null&) = delete;
+
+		Null(Null&&) = default;
+		Null& operator=(Null&&) = default;
+
+		[[nodiscard]] constexpr MemoryBlock allocate([[maybe_unused]] mem_t numOfBytes) const noexcept
 		{
 			return MemoryBlock();
 		}
 
-		void deallocate([[maybe_unused]] MemoryBlock block) noexcept
+		constexpr void deallocate([[maybe_unused]] const MemoryBlock& block) const noexcept
 		{	}
 
-		[[nodiscard]] bool getIsOwner([[maybe_unused]] byte_t* ptr) noexcept
+		[[nodiscard]] constexpr bool getIsOwner([[maybe_unused]] byte_t* ptr) const noexcept
 		{
 			return false;
 		}

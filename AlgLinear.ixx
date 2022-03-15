@@ -11,6 +11,12 @@ export namespace hfog::Algorithms
 	class Linear
 	{
 	public:
+		Linear(const Linear&) = delete;
+		Linear& operator=(const Linear&) = delete;
+
+		Linear(Linear&&) = default;
+		Linear& operator=(Linear&&) = default;
+
 		template <typename ... Args>
 		Linear(Args ... args) noexcept
 			:source(args...)
@@ -27,13 +33,13 @@ export namespace hfog::Algorithms
 			return outMemory;
 		}
 
-		void deallocate([[maybe_unused]] MemoryBlock block) noexcept
+		void deallocate([[maybe_unused]] const MemoryBlock& block) noexcept
 		{
 			this->source.releaseAllMemory();
 			this->currMemPoint = 0;
 		}
 
-		[[nodiscard]] bool getIsOwner(byte_t* ptr)
+		[[nodiscard]] bool getIsOwner(byte_t* ptr) const noexcept
 		{
 			const auto offset{ this->source.getOffset(ptr) };
 			return offset < this->currMemPoint;

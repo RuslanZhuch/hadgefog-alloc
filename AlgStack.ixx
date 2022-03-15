@@ -11,6 +11,13 @@ export namespace hfog::Algorithms
 	{
 
 	public:
+		Stack() = default;
+		Stack(const Stack&) = delete;
+		Stack& operator=(const Stack&) = delete;
+
+		Stack(Stack&&) = default;
+		Stack& operator=(Stack&&) = default;
+
 		template <typename ... Args>
 		Stack(Args ... args) noexcept
 			:source(args...)
@@ -44,7 +51,7 @@ export namespace hfog::Algorithms
 			}
 		}
 
-		[[nodiscard]] bool getIsOwner(byte_t* ptr) noexcept
+		[[nodiscard]] bool getIsOwner(byte_t* ptr) const noexcept
 		{
 			const auto offset{ this->source.getOffset(ptr) };
 			return offset < this->currMemPoint;

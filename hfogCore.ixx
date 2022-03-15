@@ -17,11 +17,13 @@ export namespace hfog
 #endif
 
 	template<typename T>
-	concept CtAllocator = requires(T t)
+	concept CtAllocator = requires(T t, const T ct)
 	{
 		{t.allocate(std::declval<mem_t>())} -> std::convertible_to<MemoryBlock>;
-		{t.deallocate(std::declval<MemoryBlock>())} -> std::convertible_to<void>;
-		{t.getIsOwner(std::declval<byte_t*>())} -> std::convertible_to<bool>;
+		{t.deallocate(std::declval<const MemoryBlock&>())} -> std::convertible_to<void>;
+		{ct.getIsOwner(std::declval<byte_t*>())} -> std::convertible_to<bool>;
+		requires std::movable<T>;
+		requires not std::copyable<T>;
 	};
 
 };
