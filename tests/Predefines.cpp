@@ -55,3 +55,24 @@ TEST(Predefines, tsAlgNull)
 	>);
 
 }
+
+
+TEST(Predefines, tsAlgUnified)
+{
+
+	static_assert(std::is_same_v<
+		hfog::Alloc::Unified<16_B, 4, 512_B>,
+		hfog::Algorithms::Unified<hfog::Sources::Stack<512_B, hfog::GarbageWriter::Default>, 16_B, 4, 8>
+	>);
+
+	static_assert(std::is_same_v<
+		hfog::Alloc::UnifiedExt<16_B, 4, 512_B>,
+		hfog::Algorithms::Unified<hfog::Sources::External<hfog::GarbageWriter::Default>, 16_B, 4, 8>
+	>);
+
+	static_assert(std::is_same_v<
+		hfog::Alloc::UnifiedHeap<16_B, 4, 512_B>,
+		hfog::Algorithms::Unified<hfog::Sources::Heap<hfog::GarbageWriter::Default>, 16_B, 4, 8>
+	>);
+
+}
