@@ -25,6 +25,7 @@
     <ClCompile Include="AlgUnified.ixx" />
     <ClCompile Include="GarbageWriter.ixx" />
     <ClCompile Include="Heap.ixx" />
+    <ClCompile Include="hfogAlloc.ixx" />
     <ClCompile Include="hfogCore.ixx" />
     <ClCompile Include="MemoryBlock.ixx" />
     <ClCompile Include="MemoryUtils.ixx" />
