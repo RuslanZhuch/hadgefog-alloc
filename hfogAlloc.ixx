@@ -2,6 +2,7 @@ export module hfogAlloc;
 
 export import MemoryUtils;
 
+export import AlgNull;
 export import AlgLinear;
 export import AlgStack;
 
@@ -11,6 +12,9 @@ import SourceHeap;
 
 export namespace hfog::Alloc
 {
+
+	//Null aliases
+	using Null = Algorithms::Null;
 
 	//Linear aliases
 	template <mem_t alignment, mem_t stackSize>

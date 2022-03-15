@@ -45,3 +45,13 @@ TEST(Predefines, tsAlgStack)
 	>);
 
 }
+
+TEST(Predefines, tsAlgNull)
+{
+
+	static_assert(std::is_same_v<
+		hfog::Alloc::Null,
+		hfog::Algorithms::Null
+	>);
+
+}
