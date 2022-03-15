@@ -14,7 +14,14 @@ export namespace hfog::Sources
 	{
 
 	public:
-		MemoryBlock getMemory(mem_t offset, mem_t size)
+		Stack() = default;
+		Stack(const Stack&) = delete;
+		Stack& operator=(const Stack&) = delete;
+
+		Stack(Stack&&) = default;
+		Stack& operator=(Stack&&) = default;
+
+		[[nodiscard]] MemoryBlock getMemory(mem_t offset, mem_t size) noexcept
 		{
 
 			MemoryBlock memBlock;
@@ -45,32 +52,30 @@ export namespace hfog::Sources
 
 		}
 
-		void releaseMemory(const MemoryBlock& memBlock)
+		void releaseMemory(const MemoryBlock& memBlock) noexcept
 		{
 			garbageWriterOp::clear(memBlock.ptr, 0, memBlock.size);
 		}
 
-		void releaseAllMemory()
+		void releaseAllMemory() noexcept
 		{
 			garbageWriterOp::clear(this->memBuffer, 0, buffSize);
 		}
 
-		[[nodiscard]] mem_t getOffset(byte_t* ptr)
+		[[nodiscard]] mem_t getOffset(byte_t* ptr) const noexcept
 		{
 			auto bInRange{ ptr != nullptr };
-			auto memPtr{ reinterpret_cast<byte_t*>(&this->memBuffer) };
-			bInRange &= (ptr >= memPtr);
-			bInRange &= ((memPtr + buffSize) - ptr > 0);
+			bInRange &= (ptr >= this->memBuffer);
+			bInRange &= ((this->memBuffer + buffSize) - ptr > 0);
 			if (!bInRange)
 				return invalidMem_t;
 
-			return static_cast<mem_t>(ptr - memPtr);
+			return static_cast<mem_t>(ptr - this->memBuffer);
 		}
 
 	private:
 		byte_t memBuffer[buffSize];
 		
-
 	};
 
 };

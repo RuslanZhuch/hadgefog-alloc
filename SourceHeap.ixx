@@ -28,6 +28,13 @@ export namespace hfog::Sources
 		};
 
 	public:
+		Heap() = default;
+		Heap(const Heap&) = delete;
+		Heap& operator=(const Heap&) = delete;
+
+		Heap(Heap&&) = default;
+		Heap& operator=(Heap&&) = default;
+
 		[[nodiscard]] MemoryBlock getMemory(mem_t offset, mem_t size) noexcept
 		{
 

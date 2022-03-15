@@ -15,11 +15,18 @@ export namespace hfog::Sources
 	{
 
 	public:
-		External(MemoryBlock extMemory)
+		External() = default;
+		External(const External&) = delete;
+		External& operator=(const External&) = delete;
+
+		External(External&&) = default;
+		External& operator=(External&&) = default;
+
+		External(MemoryBlock extMemory) noexcept
 			:extMemoryBlock(extMemory)
 		{}
 
-		MemoryBlock getMemory(mem_t offset, mem_t size)
+		[[nodiscard]] constexpr MemoryBlock getMemory(mem_t offset, mem_t size) noexcept
 		{
 
 			MemoryBlock memBlock;
@@ -48,17 +55,17 @@ export namespace hfog::Sources
 
 		}
 
-		void releaseMemory(const MemoryBlock& memBlock)
+		void releaseMemory(const MemoryBlock& memBlock) noexcept
 		{
 			garbageWriterOp::clear(memBlock.ptr, 0, memBlock.size);
 		}
 
-		void releaseAllMemory()
+		void releaseAllMemory() noexcept
 		{
 			garbageWriterOp::clear(this->extMemoryBlock.ptr, 0, this->extMemoryBlock.size);
 		}
 
-		[[nodiscard]] mem_t getOffset(byte_t* ptr)
+		[[nodiscard]] mem_t getOffset(byte_t* ptr) const noexcept
 		{
 
 			auto bInRange{ ptr != nullptr };
