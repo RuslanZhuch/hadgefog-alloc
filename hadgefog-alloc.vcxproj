@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AlgLinear.ixx" />
     <ClCompile Include="AlgNull.ixx" />
     <ClCompile Include="AlgStack.ixx" />
     <ClCompile Include="AlgUnified.ixx" />
@@ -30,7 +29,6 @@
     <ClCompile Include="MemoryBlock.ixx" />
     <ClCompile Include="MemoryUtils.ixx" />
     <ClCompile Include="SourceExt.ixx" />
-    <ClCompile Include="SourceHeap.ixx" />
     <ClCompile Include="SourcesCommon.ixx" />
     <ClCompile Include="SourceStack.ixx" />
     <ClCompile Include="StructureFallback.ixx" />

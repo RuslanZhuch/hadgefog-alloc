@@ -28,17 +28,11 @@
     <ClCompile Include="MemoryUtils.ixx">
       <Filter>lib</Filter>
     </ClCompile>
-    <ClCompile Include="SourceHeap.ixx">
-      <Filter>lib\MemorySources</Filter>
-    </ClCompile>
     <ClCompile Include="SourceExt.ixx">
       <Filter>lib\MemorySources</Filter>
     </ClCompile>
     <ClCompile Include="SourceStack.ixx">
       <Filter>lib\MemorySources</Filter>
-    </ClCompile>
-    <ClCompile Include="AlgLinear.ixx">
-      <Filter>lib\Algorithms</Filter>
     </ClCompile>
     <ClCompile Include="GarbageWriter.ixx">
       <Filter>lib</Filter>
