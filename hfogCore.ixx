@@ -4,8 +4,8 @@ module;
 
 export module hfogCore;
 
-import MemoryUtils;
-import MemoryBlock;
+export import MemoryUtils;
+export import MemoryBlock;
 
 export namespace hfog
 {

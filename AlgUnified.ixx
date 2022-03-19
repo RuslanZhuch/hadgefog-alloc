@@ -118,6 +118,41 @@ export namespace hfog::Algorithms
 
 		}
 
+		void deallocate() noexcept
+		{
+
+			this->source.releaseAllMemory();
+
+			mem_t currMemOffset{ 0_B };
+			auto currentChunck{ this->chuncks };
+			Chunck* prevChunck{ nullptr };
+			while (true)
+			{
+				currentChunck->beginMemoryOffset = currMemOffset;
+				currentChunck->freeSpace = maxBlockBytes;
+				currentChunck->freeSpaceActual = maxBlockBytes;
+				currMemOffset += maxBlockBytes;
+				currentChunck->prevChunck = prevChunck;
+				if (currMemOffset == maxBlockBytes * numOfChuncks)
+					break;
+				prevChunck = currentChunck;
+				auto nextChunck{ currentChunck + 1 };
+				currentChunck->nextChunck = nextChunck;
+				currentChunck = nextChunck;
+			}
+
+			for (size_t id{ 0 }; id < numOfSegments; ++id)
+			{
+				this->entries[id] = this->chuncks;
+			}
+			for (size_t id{ 0 }; id < numOfSegments - 1; ++id)
+			{
+				this->tails[id] = nullptr;
+			}
+			this->tails[numOfSegments - 1] = &this->chuncks[numOfSegments - 1];
+
+		}
+
 		void deallocate(const MemoryBlock& block) noexcept
 		{
 			

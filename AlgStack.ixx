@@ -34,6 +34,12 @@ export namespace hfog::Algorithms
 			return outMemory;
 		}
 
+		void deallocate() noexcept
+		{
+			this->source.releaseAllMemory();
+			this->currMemPoint = 0;
+		}
+
 		void deallocate(const MemoryBlock& block) noexcept
 		{
 			const auto blockPtr{ block.ptr };
@@ -42,8 +48,6 @@ export namespace hfog::Algorithms
 			const auto memoryPoint{ this->currMemPoint - blockSize };
 			const auto sourcePtr{ this->source.getMemory(memoryPoint, blockSize) };
 
-			//Remove branch for speedup
-			//Doest solve x64 slowdown
 			if (sourcePtr.ptr == blockPtr)
 			{
 				this->source.releaseMemory(sourcePtr);

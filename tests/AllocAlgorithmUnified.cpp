@@ -3,7 +3,6 @@
 import MemoryUtils;
 import AlgUnified;
 
-import SourceHeap;
 import SourceStack;
 import SourceExt;
 
@@ -11,16 +10,20 @@ import hfogCore;
 
 using namespace hfog::MemoryUtils::Literals;
 
-static_assert(hfog::CtAllocator<hfog::Algorithms::Unified<hfog::Sources::Heap<hfog::GarbageWriter::Default>, 16_B, 4, 1>>);
 static_assert(hfog::CtAllocator<hfog::Algorithms::Unified<hfog::Sources::External<hfog::GarbageWriter::Default>, 16_B, 4, 1>>);
 static_assert(hfog::CtAllocator<hfog::Algorithms::Unified<hfog::Sources::Stack<128_B, hfog::GarbageWriter::Default>, 16_B, 4, 1>>);
 
 TEST(AllocAlgorithms, tsUnified)
 {
 
-	using source_t = hfog::Sources::Heap<hfog::GarbageWriter::Default>;
+	byte_t extBuffer[256];
+	hfog::MemoryBlock extBlock;
+	extBlock.ptr = extBuffer;
+	extBlock.size = sizeof(extBuffer);
 
-	hfog::Algorithms::Unified<source_t, 16_B, 4, 4> unified;
+	using source_t = hfog::Sources::External<hfog::GarbageWriter::Default>;
+
+	hfog::Algorithms::Unified<source_t, 16_B, 4, 4> unified(extBlock);
 
 	{
 
@@ -96,9 +99,14 @@ TEST(AllocAlgorithms, tsUnified)
 TEST(AllocAlgorithms, tsUnifiedGaps)
 {
 
-	using source_t = hfog::Sources::Heap<hfog::GarbageWriter::Default>;
+	byte_t extBuffer[256];
+	hfog::MemoryBlock extBlock;
+	extBlock.ptr = extBuffer;
+	extBlock.size = sizeof(extBuffer);
 
-	hfog::Algorithms::Unified<source_t, 16_B, 4, 4> unified;
+	using source_t = hfog::Sources::External<hfog::GarbageWriter::Default>;
+
+	hfog::Algorithms::Unified<source_t, 16_B, 4, 4> unified(extBlock);
 
 	{
 
@@ -169,9 +177,14 @@ TEST(AllocAlgorithms, tsUnifiedGaps)
 TEST(AllocAlgorithms, tsUnifiedBadData)
 {
 
-	using source_t = hfog::Sources::Heap<hfog::GarbageWriter::Default>;
+	byte_t extBuffer[256];
+	hfog::MemoryBlock extBlock;
+	extBlock.ptr = extBuffer;
+	extBlock.size = sizeof(extBuffer);
 
-	hfog::Algorithms::Unified<source_t, 16_B, 4, 4> unified;
+	using source_t = hfog::Sources::External<hfog::GarbageWriter::Default>;
+
+	hfog::Algorithms::Unified<source_t, 16_B, 4, 4> unified(extBlock);
 
 	{
 		{
@@ -241,9 +254,14 @@ TEST(AllocAlgorithms, tsUnifiedBadData)
 TEST(AllocAlgorithms, tsUnifiedOneChunck)
 {
 
-	using source_t = hfog::Sources::Heap<hfog::GarbageWriter::Default>;
+	byte_t extBuffer[256];
+	hfog::MemoryBlock extBlock;
+	extBlock.ptr = extBuffer;
+	extBlock.size = sizeof(extBuffer);
 
-	hfog::Algorithms::Unified<source_t, 16_B, 4, 1> unified;
+	using source_t = hfog::Sources::External<hfog::GarbageWriter::Default>;
+
+	hfog::Algorithms::Unified<source_t, 16_B, 4, 1> unified(extBlock);
 
 	{
 		{
@@ -401,6 +419,47 @@ TEST(AllocAlgorithms, tsUnifiedOwn)
 		//In this case some other memBlock use this address
 		EXPECT_TRUE(unified.getIsOwner(memBlock2.ptr));
 		EXPECT_TRUE(unified.getIsOwner(memBlock4.ptr));
+
+	}
+
+}
+
+TEST(AllocAlgorithms, tsUnifiedFullDeallocation)
+{
+
+	using source_t = hfog::Sources::Stack<16_B * 4 * 4,
+		hfog::GarbageWriter::ByteWriter<0xFA, 0xAF>>;
+
+	hfog::Algorithms::Unified<source_t, 16_B, 4, 4> unified;
+
+	for (size_t itersLeft{3}; itersLeft > 0; --itersLeft)
+	{
+
+		const auto memBlock1{ unified.allocate(64_B) };
+		EXPECT_TRUE(getValuesAre(memBlock1.ptr, 0_B, 64_B, 0xFA));
+
+		const auto memBlock2{ unified.allocate(40_B) };
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0_B, 48_B, 0xFA));
+
+		const auto memBlock3{ unified.allocate(20_B) };
+		EXPECT_TRUE(getValuesAre(memBlock3.ptr, 0_B, 32_B, 0xFA));
+
+		const auto memBlock4{ unified.allocate(8_B) };
+		EXPECT_TRUE(getValuesAre(memBlock4.ptr, 0_B, 16_B, 0xFA));
+
+		const auto memBlock5{ unified.allocate(12_B) };
+		EXPECT_TRUE(getValuesAre(memBlock5.ptr, 0_B, 16_B, 0xFA));
+
+		const auto memBlock6{ unified.allocate(28_B) };
+		EXPECT_TRUE(getValuesAre(memBlock6.ptr, 0_B, 32_B, 0xFA));
+
+		unified.deallocate();
+		EXPECT_TRUE(getValuesAre(memBlock1.ptr, 0_B, 64_B, 0xAF));
+		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0_B, 48_B, 0xAF));
+		EXPECT_TRUE(getValuesAre(memBlock3.ptr, 0_B, 32_B, 0xAF));
+		EXPECT_TRUE(getValuesAre(memBlock4.ptr, 0_B, 16_B, 0xAF));
+		EXPECT_TRUE(getValuesAre(memBlock5.ptr, 0_B, 16_B, 0xAF));
+		EXPECT_TRUE(getValuesAre(memBlock6.ptr, 0_B, 32_B, 0xAF));
 
 	}
 
