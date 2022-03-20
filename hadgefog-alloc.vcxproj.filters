@@ -61,13 +61,11 @@
     <ClCompile Include="StructureSegregator.ixx">
       <Filter>lib\Structures</Filter>
     </ClCompile>
-<<<<<<< HEAD
     <ClCompile Include="hfogAlloc.ixx">
       <Filter>lib</Filter>
-=======
+    </ClCompile>
     <ClCompile Include="AlgPool.ixx">
       <Filter>lib\Algorithms</Filter>
->>>>>>> origin/feature
     </ClCompile>
   </ItemGroup>
 </Project>
