@@ -38,11 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AllocAlgorithmNull.cpp" />
-<<<<<<< HEAD
-=======
     <ClCompile Include="AllocAlgorithmsPool.cpp" />
-    <ClCompile Include="AllocAlgorithmsLinear.cpp" />
->>>>>>> origin/feature
     <ClCompile Include="AllocAlgorithmsStack.cpp" />
     <ClCompile Include="AllocAlgorithmUnified.cpp" />
     <ClCompile Include="GarbageWriter.cpp" />
