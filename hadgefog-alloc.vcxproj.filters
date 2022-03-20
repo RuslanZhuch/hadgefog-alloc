@@ -20,6 +20,18 @@
     <Filter Include="lib\Supports">
       <UniqueIdentifier>{f4e85563-d40e-4653-893a-5bd6b39690e8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Algorithms">
+      <UniqueIdentifier>{b06fed23-bc1b-44e2-952c-ea960f336e96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources">
+      <UniqueIdentifier>{fb971ffa-ad1a-4478-bd80-39979f78b56d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Structures">
+      <UniqueIdentifier>{6639e5e0-c0de-407c-bfb6-4064d024cb66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Misc">
+      <UniqueIdentifier>{8708e80f-c574-4798-ac30-bc327960907d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MemoryBlock.ixx">
@@ -28,44 +40,44 @@
     <ClCompile Include="MemoryUtils.ixx">
       <Filter>lib</Filter>
     </ClCompile>
-    <ClCompile Include="SourceExt.ixx">
-      <Filter>lib\MemorySources</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceStack.ixx">
-      <Filter>lib\MemorySources</Filter>
-    </ClCompile>
     <ClCompile Include="GarbageWriter.ixx">
       <Filter>lib</Filter>
-    </ClCompile>
-    <ClCompile Include="SourcesCommon.ixx">
-      <Filter>lib\MemorySources</Filter>
-    </ClCompile>
-    <ClCompile Include="AlgStack.ixx">
-      <Filter>lib\Algorithms</Filter>
-    </ClCompile>
-    <ClCompile Include="AlgNull.ixx">
-      <Filter>lib\Algorithms</Filter>
-    </ClCompile>
-    <ClCompile Include="StructureFallback.ixx">
-      <Filter>lib\Structures</Filter>
     </ClCompile>
     <ClCompile Include="hfogCore.ixx">
       <Filter>lib</Filter>
     </ClCompile>
-    <ClCompile Include="Heap.ixx">
-      <Filter>lib\Supports</Filter>
-    </ClCompile>
-    <ClCompile Include="AlgUnified.ixx">
-      <Filter>lib\Algorithms</Filter>
-    </ClCompile>
-    <ClCompile Include="StructureSegregator.ixx">
-      <Filter>lib\Structures</Filter>
-    </ClCompile>
     <ClCompile Include="hfogAlloc.ixx">
       <Filter>lib</Filter>
     </ClCompile>
+    <ClCompile Include="AlgUnified.ixx">
+      <Filter>Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="AlgNull.ixx">
+      <Filter>Algorithms</Filter>
+    </ClCompile>
     <ClCompile Include="AlgPool.ixx">
-      <Filter>lib\Algorithms</Filter>
+      <Filter>Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="AlgStack.ixx">
+      <Filter>Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="SourcesCommon.ixx">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceExt.ixx">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="StructureSegregator.ixx">
+      <Filter>Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="StructureFallback.ixx">
+      <Filter>Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="SourceStack.ixx">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Heap.ixx">
+      <Filter>Misc</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
