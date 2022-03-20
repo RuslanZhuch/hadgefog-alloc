@@ -2,7 +2,6 @@
 
 import AlgPool;
 
-import SourceHeap;
 import SourceExt;
 import SourceStack;
 
@@ -10,7 +9,6 @@ import hfogCore;
 
 using namespace hfog::MemoryUtils::Literals;
 
-static_assert(hfog::CtAllocator<hfog::Algorithms::Pool<hfog::Sources::Heap<hfog::GarbageWriter::Default>, 16_B, 1>>);
 static_assert(hfog::CtAllocator<hfog::Algorithms::Pool<hfog::Sources::External<hfog::GarbageWriter::Default>, 16_B, 4>>);
 static_assert(hfog::CtAllocator<hfog::Algorithms::Pool<hfog::Sources::Stack<128_B, hfog::GarbageWriter::Default>, 16_B, 8>>);
 
@@ -18,9 +16,10 @@ static_assert(hfog::CtAllocator<hfog::Algorithms::Pool<hfog::Sources::Stack<128_
 TEST(AllocAlgorithms, tsPool)
 {
 
-	using source_t = hfog::Sources::Heap<hfog::GarbageWriter::Default>;
+	using source_t = hfog::Sources::External<hfog::GarbageWriter::Default>;
 
-	hfog::Algorithms::Pool<source_t, 16_B, 4> pool;
+	byte_t extBuffer[64_B];
+	hfog::Algorithms::Pool<source_t, 16_B, 4> pool(hfog::MemoryBlock(extBuffer, sizeof(extBuffer)));
 
 	{
 

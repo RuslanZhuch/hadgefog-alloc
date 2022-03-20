@@ -20,6 +20,9 @@ export namespace hfog::Algorithms
 			return MemoryBlock();
 		}
 
+		constexpr void deallocate() const noexcept
+		{	}
+
 		constexpr void deallocate([[maybe_unused]] const MemoryBlock& block) const noexcept
 		{	}
 

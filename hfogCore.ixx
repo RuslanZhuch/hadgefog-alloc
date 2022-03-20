@@ -21,6 +21,7 @@ export namespace hfog
 	{
 		{t.allocate(std::declval<mem_t>())} -> std::convertible_to<MemoryBlock>;
 		{t.deallocate(std::declval<const MemoryBlock&>())} -> std::convertible_to<void>;
+		{t.deallocate()} -> std::convertible_to<void>;
 		{ct.getIsOwner(std::declval<byte_t*>())} -> std::convertible_to<bool>;
 		requires std::movable<T>;
 		requires not std::copyable<T>;

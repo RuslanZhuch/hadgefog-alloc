@@ -24,6 +24,13 @@ export namespace hfog::Algorithms
 		};
 
 	public:
+		Pool() = default;
+		Pool(const Pool&) = delete;
+		Pool& operator=(const Pool&) = delete;
+
+		Pool(Pool&&) = default;
+		Pool& operator=(Pool&&) = default;
+
 		template <typename ... Args>
 		Pool(Args ... args) noexcept
 			:source(args...)
@@ -70,6 +77,26 @@ export namespace hfog::Algorithms
 
 		}
 
+		void deallocate() noexcept
+		{
+
+			this->source.releaseAllMemory();
+			
+			mem_t currMemOffset{ 0_B };
+			auto currentChunck{ this->chuncks };
+			currentChunck->isEmtpy = true;
+			currentChunck->memOffset = currMemOffset;
+			firstEmptyChunk = currentChunck;
+			for (mem_t i = 1; i < numOfChuncks; ++i) {
+				chuncks[i - 1].nextChunck = &chuncks[i];
+				chuncks[i].memOffset = currMemOffset + i * alignment;
+				chuncks[i].isEmtpy = true;
+				chuncks[i].nextChunck = true;
+			}
+			lastEmptyChunk = &chuncks[numOfChuncks - 1];
+
+		}
+
 		void deallocate(const MemoryBlock& block) noexcept
 		{
 
@@ -98,7 +125,7 @@ export namespace hfog::Algorithms
 			}
 		}
 
-		[[nodiscard]] bool getIsOwner(byte_t* ptr)
+		[[nodiscard]] bool getIsOwner(byte_t* ptr) const
 		{
 
 			const auto checkMemoryOffset{ this->source.getOffset(ptr) };

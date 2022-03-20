@@ -17,3 +17,14 @@ TEST(MemoryBlock, tsMemBlockStruct)
 	EXPECT_EQ(memBlock.size, 0_B);
 
 }
+
+TEST(MemoryBlock, tsMemBlockCreation)
+{
+
+	byte_t data[16_B];
+
+	hfog::MemoryBlock memBlock(data, sizeof(data));
+	EXPECT_EQ(memBlock.ptr, data);
+	EXPECT_EQ(memBlock.size, sizeof(data));
+
+}

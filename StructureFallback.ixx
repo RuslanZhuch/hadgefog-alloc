@@ -28,6 +28,14 @@ export namespace hfog::Structures
 			return primaryBlock;
 		}
 
+		void deallocate() noexcept
+		{
+
+			this->primary.deallocate();
+			this->secondary.deallocate();
+
+		}
+
 		void deallocate(const MemoryBlock& memBlock) noexcept
 		{
 
