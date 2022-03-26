@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="lib">
       <UniqueIdentifier>{f41832cf-4d2a-4578-9821-296ed732c35a}</UniqueIdentifier>
     </Filter>
@@ -20,16 +16,7 @@
     <Filter Include="lib\Supports">
       <UniqueIdentifier>{f4e85563-d40e-4653-893a-5bd6b39690e8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Algorithms">
-      <UniqueIdentifier>{b06fed23-bc1b-44e2-952c-ea960f336e96}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources">
-      <UniqueIdentifier>{fb971ffa-ad1a-4478-bd80-39979f78b56d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Structures">
-      <UniqueIdentifier>{6639e5e0-c0de-407c-bfb6-4064d024cb66}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Misc">
+    <Filter Include="lib\Misc">
       <UniqueIdentifier>{8708e80f-c574-4798-ac30-bc327960907d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -49,35 +36,35 @@
     <ClCompile Include="hfogAlloc.ixx">
       <Filter>lib</Filter>
     </ClCompile>
-    <ClCompile Include="AlgUnified.ixx">
-      <Filter>Algorithms</Filter>
-    </ClCompile>
-    <ClCompile Include="AlgNull.ixx">
-      <Filter>Algorithms</Filter>
-    </ClCompile>
-    <ClCompile Include="AlgPool.ixx">
-      <Filter>Algorithms</Filter>
-    </ClCompile>
-    <ClCompile Include="AlgStack.ixx">
-      <Filter>Algorithms</Filter>
-    </ClCompile>
-    <ClCompile Include="SourcesCommon.ixx">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="SourceExt.ixx">
-      <Filter>Sources</Filter>
+    <ClCompile Include="Heap.ixx">
+      <Filter>lib\Misc</Filter>
     </ClCompile>
     <ClCompile Include="StructureSegregator.ixx">
-      <Filter>Structures</Filter>
+      <Filter>lib\Structures</Filter>
     </ClCompile>
     <ClCompile Include="StructureFallback.ixx">
-      <Filter>Structures</Filter>
+      <Filter>lib\Structures</Filter>
     </ClCompile>
     <ClCompile Include="SourceStack.ixx">
-      <Filter>Sources</Filter>
+      <Filter>lib\MemorySources</Filter>
     </ClCompile>
-    <ClCompile Include="Heap.ixx">
-      <Filter>Misc</Filter>
+    <ClCompile Include="SourceExt.ixx">
+      <Filter>lib\MemorySources</Filter>
+    </ClCompile>
+    <ClCompile Include="SourcesCommon.ixx">
+      <Filter>lib\MemorySources</Filter>
+    </ClCompile>
+    <ClCompile Include="AlgUnified.ixx">
+      <Filter>lib\Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="AlgPool.ixx">
+      <Filter>lib\Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="AlgStack.ixx">
+      <Filter>lib\Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="AlgNull.ixx">
+      <Filter>lib\Algorithms</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
