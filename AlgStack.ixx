@@ -11,7 +11,6 @@ export namespace hfog::Algorithms
 	{
 
 	public:
-		Stack() = default;
 		Stack(const Stack&) = delete;
 		Stack& operator=(const Stack&) = delete;
 

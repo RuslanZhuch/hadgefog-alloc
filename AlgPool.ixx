@@ -24,7 +24,7 @@ export namespace hfog::Algorithms
 		};
 
 	public:
-		Pool() = default;
+		//Pool() = default;
 		Pool(const Pool&) = delete;
 		Pool& operator=(const Pool&) = delete;
 
@@ -84,14 +84,14 @@ export namespace hfog::Algorithms
 			
 			mem_t currMemOffset{ 0_B };
 			auto currentChunck{ this->chuncks };
-			currentChunck->isEmtpy = true;
+			currentChunck->isEmpty = true;
 			currentChunck->memOffset = currMemOffset;
 			firstEmptyChunk = currentChunck;
 			for (mem_t i = 1; i < numOfChuncks; ++i) {
 				chuncks[i - 1].nextChunck = &chuncks[i];
 				chuncks[i].memOffset = currMemOffset + i * alignment;
-				chuncks[i].isEmtpy = true;
-				chuncks[i].nextChunck = true;
+				chuncks[i].isEmpty = true;
+				chuncks[i].nextChunck = nullptr;
 			}
 			lastEmptyChunk = &chuncks[numOfChuncks - 1];
 
