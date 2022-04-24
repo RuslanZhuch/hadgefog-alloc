@@ -1,8 +1,8 @@
 #include "pch.h"
 
-import SourceExt;
-import SourceStack;
-import SourcesCommon;
+import hfog.Sources.Ext;
+import hfog.Sources.Stack;
+import hfog.Sources.Common;
 
 using namespace hfog::MemoryUtils::Literals;
 

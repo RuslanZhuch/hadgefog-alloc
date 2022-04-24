@@ -1,9 +1,9 @@
-export module StructureFallback;
+export module hfog.Structures.Fallback;
 
-import MemoryBlock;
-import MemoryUtils;
+import hfog.MemoryBlock;
+import hfog.MemoryUtils;
 
-import hfogCore;
+import hfog.Core;
 
 export namespace hfog::Structures
 {

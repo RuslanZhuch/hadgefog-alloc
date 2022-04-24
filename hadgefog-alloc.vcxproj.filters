@@ -54,7 +54,7 @@
     <ClCompile Include="SourcesCommon.ixx">
       <Filter>lib\MemorySources</Filter>
     </ClCompile>
-    <ClCompile Include="AlgUnified.ixx">
+    <ClCompile Include="AlgIslands.ixx">
       <Filter>lib\Algorithms</Filter>
     </ClCompile>
     <ClCompile Include="AlgPool.ixx">
@@ -64,6 +64,9 @@
       <Filter>lib\Algorithms</Filter>
     </ClCompile>
     <ClCompile Include="AlgNull.ixx">
+      <Filter>lib\Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="AlgUnified.ixx">
       <Filter>lib\Algorithms</Filter>
     </ClCompile>
   </ItemGroup>

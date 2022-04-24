@@ -22,6 +22,7 @@
     <ClCompile Include="AlgNull.ixx" />
     <ClCompile Include="AlgPool.ixx" />
     <ClCompile Include="AlgStack.ixx" />
+    <ClCompile Include="AlgIslands.ixx" />
     <ClCompile Include="AlgUnified.ixx" />
     <ClCompile Include="GarbageWriter.ixx" />
     <ClCompile Include="Heap.ixx" />
@@ -64,6 +65,7 @@
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+    <EnableASAN>false</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>

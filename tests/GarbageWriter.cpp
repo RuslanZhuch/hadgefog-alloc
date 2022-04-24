@@ -1,6 +1,6 @@
 #include "pch.h"
 
-import GarbageWriter;
+import hfog.GarbageWriter;
 
 static_assert(hfog::GarbageWriter::CtGarbageWriter<hfog::GarbageWriter::Default, char>);
 static_assert(hfog::GarbageWriter::CtGarbageWriter<hfog::GarbageWriter::ByteWriter<0xAF>, char>);

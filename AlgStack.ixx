@@ -1,7 +1,7 @@
-export module AlgStack;
-import SourcesCommon;
-import MemoryUtils;
-import MemoryBlock;
+export module hfog.Algorithms.Stack;
+import hfog.Sources.Common;
+import hfog.MemoryUtils;
+import hfog.MemoryBlock;
 
 export namespace hfog::Algorithms
 {

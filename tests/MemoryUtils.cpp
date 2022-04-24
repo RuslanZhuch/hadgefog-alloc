@@ -1,6 +1,6 @@
 #include "pch.h"
 
-import MemoryUtils;
+import hfog.MemoryUtils;
 
 using namespace hfog::MemoryUtils::Literals;
 

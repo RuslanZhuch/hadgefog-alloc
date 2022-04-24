@@ -2,10 +2,10 @@ module;
 #include <utility>
 #include <concepts>
 
-export module hfogCore;
+export module hfog.Core;
 
-export import MemoryUtils;
-export import MemoryBlock;
+export import hfog.MemoryUtils;
+export import hfog.MemoryBlock;
 
 export namespace hfog
 {

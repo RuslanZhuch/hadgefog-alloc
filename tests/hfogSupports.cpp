@@ -1,6 +1,6 @@
 #include "pch.h"
 
-import Heap;
+import hfog.Heap;
 
 TEST(Supports, tsMinHeap)
 {

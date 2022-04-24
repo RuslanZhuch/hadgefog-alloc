@@ -40,6 +40,7 @@
     <ClCompile Include="AllocAlgorithmNull.cpp" />
     <ClCompile Include="AllocAlgorithmsPool.cpp" />
     <ClCompile Include="AllocAlgorithmsStack.cpp" />
+    <ClCompile Include="AllocAlgorithmIslands.cpp" />
     <ClCompile Include="AllocAlgorithmUnified.cpp" />
     <ClCompile Include="GarbageWriter.cpp" />
     <ClCompile Include="hfogSupports.cpp" />

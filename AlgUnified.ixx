@@ -1,32 +1,47 @@
-export module AlgUnified;
+module;
 
-import MemoryUtils;
-import MemoryBlock;
-import SourcesCommon;
+#include <cassert>
+#include <memory>
+
+export module hfog.Algorithms.Unified;
+
+import hfog.MemoryUtils;
+import hfog.MemoryBlock;
+import hfog.Sources.Common;
 
 inline constexpr auto invalidEntryId_t{ invalidMem_t };
+
 
 export namespace hfog::Algorithms
 {
 
-	template <Sources::CtSource Source, mem_t alignment, int numOfSegments, int numOfChuncks,
+	template <mem_t totalMemory, mem_t alignment>
+	consteval mem_t computeFreelistMemorySize()
+	{
+		return static_cast<mem_t>(totalMemory / alignment / 2.f + 0.5f) * 32;
+	}
+
+	template <Sources::CtSource Source, mem_t alignment, mem_t MAX_BYTES,
 		MemoryUtils::CtAlign alignFunc = MemoryUtils::Align<alignment>>
-	class Unified
+		class Unified
 	{
 
-		static_assert(numOfSegments > 0);
-		static_assert(numOfChuncks > 0);
-
-		static constexpr auto maxBlockBytes{ alignment * numOfSegments };
+		static_assert(MAX_BYTES > 0);
 
 		struct Chunck
 		{
-			mem_t beginMemoryOffset;
-			mem_t freeSpace{ maxBlockBytes };
-			mem_t freeSpaceActual{ maxBlockBytes };
-			Chunck* nextChunck{ nullptr };
-			Chunck* prevChunck{ nullptr };
+			mem_t memOffset{};
+			mem_t numOfBytes{};
+			Chunck* next{ nullptr };
+			Chunck* prev{ nullptr };
 		};
+
+		static constexpr auto CHUNCK_SIZE{ sizeof(Chunck) };
+
+		static constexpr auto FREELIST_MAX_BYTES{ computeFreelistMemorySize<MAX_BYTES, alignment>() };
+		static constexpr auto MAX_FRAGMENTS{ FREELIST_MAX_BYTES / CHUNCK_SIZE };
+
+		static_assert(FREELIST_MAX_BYTES <= MAX_BYTES);
 
 	public:
 		template <typename ... Args>
@@ -34,31 +49,13 @@ export namespace hfog::Algorithms
 			:source(args...)
 		{
 
-			mem_t currMemOffset{ 0_B };
-			auto currentChunck{ this->chuncks };
-			Chunck* prevChunck{ nullptr };
-			while(true)
-			{
-				currentChunck->beginMemoryOffset = currMemOffset;
-				currMemOffset += maxBlockBytes;
-				currentChunck->prevChunck = prevChunck;
-				if (currMemOffset == maxBlockBytes * numOfChuncks)
-					break;
-				prevChunck = currentChunck;
-				auto nextChunck{ currentChunck + 1 };
-				currentChunck->nextChunck = nextChunck;
-				currentChunck = nextChunck;
-			}
+			const auto memBlock{ this->source.getMemory(MAX_BYTES, FREELIST_MAX_BYTES) };
+			assert(memBlock.ptr != nullptr);
+			assert(memBlock.size == FREELIST_MAX_BYTES);
 
-			for (size_t id{ 0 }; id < numOfSegments; ++id)
-			{
-				this->entries[id] = this->chuncks;
-			}
-			for (size_t id{ 0 }; id < numOfSegments - 1; ++id)
-			{
-				this->tails[id] = nullptr;
-			}
-			this->tails[numOfSegments - 1] = &this->chuncks[numOfSegments - 1];
+			this->freelistEntry = reinterpret_cast<Chunck*>(memBlock.ptr);
+
+			this->addChunck(0_B, MAX_BYTES);
 
 		}
 
@@ -70,177 +67,200 @@ export namespace hfog::Algorithms
 
 		[[nodiscard]] MemoryBlock allocate(mem_t numOfBytes) noexcept
 		{
+
+			if (this->freeBlockHead == nullptr)
+				return {};
+
 			const auto alignNumOfBytes{ alignFunc::compute(numOfBytes) };
 
-			if (alignNumOfBytes > maxBlockBytes)
-				return {};
-
-			const auto entryId{ this->computeEntryId(alignNumOfBytes) };
-			auto currChunck{ this->entries[entryId] };
-			if (currChunck == nullptr)
-				return {};
-
-			const auto rootMemOffset{ currChunck->beginMemoryOffset };
-			const auto localMemOffset{ maxBlockBytes - currChunck->freeSpace };
-			const auto memoryOffset{ rootMemOffset + localMemOffset };
-
-			const auto outMemory{ this->source.getMemory(memoryOffset, alignNumOfBytes) };
-			if (outMemory.ptr == nullptr)
+			Chunck* bestChunck{ this->freeBlockHead };
+			mem_t bestSize{ bestChunck->numOfBytes };
+			auto currChunck{ this->freeBlockHead->next };
+			while (currChunck != nullptr)
 			{
-				return outMemory;
+				const auto currSize{ currChunck->numOfBytes };
+				if (currSize >= alignNumOfBytes &&
+					(currSize < bestSize) || (bestSize < alignNumOfBytes))
+				{
+					bestSize = currSize;
+					bestChunck = currChunck;
+					if (bestSize == alignNumOfBytes)
+						break;
+				}
+				currChunck = currChunck->next;
 			}
 
-			const auto sourceEntryId{ this->computeEntryId(currChunck->freeSpace) };
+			if (bestSize < alignNumOfBytes)
+				return {};
 
-			currChunck->freeSpace -= alignNumOfBytes;
-			currChunck->freeSpaceActual -= alignNumOfBytes;
-			const auto newEntryId{ this->computeEntryId(currChunck->freeSpace) };
-			if (newEntryId != sourceEntryId ||
-				tails[newEntryId] == nullptr)
+			const auto memBlock{ this->source.getMemory(bestChunck->memOffset, alignNumOfBytes) };
+
+			if (bestSize == alignNumOfBytes)
 			{
-
-				this->entries[sourceEntryId] = currChunck->nextChunck;
-				if (this->entries[sourceEntryId] != nullptr)
-					this->entries[sourceEntryId]->prevChunck = nullptr;
-				else
-					this->tails[sourceEntryId] = nullptr;
-
-				currChunck->nextChunck = nullptr;
-
-				if (newEntryId == invalidEntryId_t)
-					this->updateEntries();
-				else
-					this->appendChunck(currChunck, newEntryId);
-
+				this->removeChunck(bestChunck);
+			}
+			else
+			{
+				bestChunck->memOffset += alignNumOfBytes;
+				bestChunck->numOfBytes -= alignNumOfBytes;
 			}
 
-			return outMemory;
+			return memBlock;
 
 		}
 
 		void deallocate() noexcept
 		{
 
+			this->freeBlockHead = nullptr;
+			this->freeBlockTail = nullptr;
+			this->numOfFreeListChuncks = 0;
+			this->addChunck(0_B, MAX_BYTES);
+
 			this->source.releaseAllMemory();
-
-			mem_t currMemOffset{ 0_B };
-			auto currentChunck{ this->chuncks };
-			Chunck* prevChunck{ nullptr };
-			while (true)
-			{
-				currentChunck->beginMemoryOffset = currMemOffset;
-				currentChunck->freeSpace = maxBlockBytes;
-				currentChunck->freeSpaceActual = maxBlockBytes;
-				currMemOffset += maxBlockBytes;
-				currentChunck->prevChunck = prevChunck;
-				if (currMemOffset == maxBlockBytes * numOfChuncks)
-					break;
-				prevChunck = currentChunck;
-				auto nextChunck{ currentChunck + 1 };
-				currentChunck->nextChunck = nextChunck;
-				currentChunck = nextChunck;
-			}
-
-			for (size_t id{ 0 }; id < numOfSegments; ++id)
-			{
-				this->entries[id] = this->chuncks;
-			}
-			for (size_t id{ 0 }; id < numOfSegments - 1; ++id)
-			{
-				this->tails[id] = nullptr;
-			}
-			this->tails[numOfSegments - 1] = &this->chuncks[numOfSegments - 1];
-
+		
 		}
 
 		void deallocate(const MemoryBlock& block) noexcept
 		{
-			
-			const auto memOffset{ this->source.getOffset(block.ptr) };
+
+			this->addFreeListChunck(block);
 			this->source.releaseMemory(block);
-
-			const auto chunckId{ memOffset / maxBlockBytes };
-
-			auto currChunck{ &this->chuncks[chunckId] };
-
-			currChunck->freeSpaceActual += block.size;
-			if (currChunck->freeSpaceActual == maxBlockBytes)
-			{
-				currChunck->freeSpace = maxBlockBytes;
-				if (auto prevChunck{ currChunck->prevChunck }; prevChunck != nullptr)
-				{
-					prevChunck->nextChunck = currChunck->nextChunck;
-					if (currChunck->nextChunck != nullptr)
-					{
-						currChunck->nextChunck->prevChunck = prevChunck;
-					}
-				}
-				this->appendChunck(currChunck, numOfSegments - 1);
-			}
 
 		}
 
 		[[nodiscard]] bool getIsOwner(byte_t* ptr) const noexcept
 		{
 
-			const auto checkMemoryOffset{ this->source.getOffset(ptr) };
-			const auto maxOffset{ alignment * numOfSegments * numOfChuncks };
-			if (checkMemoryOffset > maxOffset)
+			const auto memOffset{ this->source.getOffset(ptr) };
+			if (memOffset == invalidMem_t)
 				return false;
 
-			const auto chunckId{ checkMemoryOffset / maxBlockBytes };
-			const auto chunck{ &this->chuncks[chunckId] };
-			const auto relativeMemOffset{ checkMemoryOffset - chunck->beginMemoryOffset };
+			auto currChunck{ this->freeBlockHead };
+			while (currChunck != nullptr)
+			{
+				if (currChunck->memOffset <= memOffset &&
+					memOffset < currChunck->memOffset + currChunck->numOfBytes)
+					return false;
+				currChunck = currChunck->next;
+			}
 
-			const auto occupiedSize{ maxBlockBytes - chunck->freeSpace };
-			const auto bOccupied{ relativeMemOffset < occupiedSize };
-
-			return bOccupied;
+			return true;
 
 		}
 
 	private:
-
-		void updateEntries() noexcept
+		void addFreeListChunck(const MemoryBlock& block)
 		{
-			for (int id{ numOfSegments - 2 }; id >= 0; --id)
+
+			auto memOffset = this->source.getOffset(block.ptr);
+			auto numOfBytes = block.size;
+
+			Chunck* adjPrev{ nullptr };
+			Chunck* adjNext{ nullptr };
+
+			auto currChunck{ this->freeBlockHead };
+			while (currChunck != nullptr)
 			{
-				if (this->tails[id] == nullptr)
+
+				if (adjPrev == nullptr &&
+					currChunck->memOffset + currChunck->numOfBytes == memOffset)
 				{
-					this->entries[id] = this->entries[id + 1];
+					adjPrev = currChunck;
+					if (adjNext != nullptr)
+					{
+						adjPrev->numOfBytes += adjNext->numOfBytes;
+						this->removeChunck(adjNext);
+					}
+					else
+					{
+						adjPrev->numOfBytes += numOfBytes;
+					}
 				}
+				if (adjNext == nullptr &&
+					currChunck->memOffset == memOffset + numOfBytes)
+				{
+					adjNext = currChunck;
+					if (adjPrev != nullptr)
+					{
+						adjPrev->numOfBytes += adjNext->numOfBytes;
+						this->removeChunck(adjNext);
+					}
+					else
+					{
+						adjNext->numOfBytes += numOfBytes;
+						adjNext->memOffset = memOffset;
+					}
+				}
+				if ((adjNext != nullptr) && (adjPrev != nullptr))
+					break;
+				currChunck = currChunck->next;
 			}
+
+			if ((adjNext == nullptr) && (adjPrev == nullptr))
+			{
+				this->addChunck(memOffset, numOfBytes);
+			}
+
 		}
 
-		void appendChunck(Chunck* currChunck, size_t entryId) noexcept
+		void removeChunck(Chunck* chunckToRemove)
 		{
-			if (this->tails[entryId] == nullptr)
+
+			chunckToRemove->memOffset = this->freeBlockTail->memOffset;
+			chunckToRemove->numOfBytes = this->freeBlockTail->numOfBytes;
+
+			this->freeBlockTail = this->freeBlockTail->prev;
+			if (this->freeBlockTail != nullptr)
 			{
-				this->entries[entryId] = currChunck;
-				this->tails[entryId] = currChunck;
+				this->freeBlockTail->next = nullptr;
 			}
 			else
 			{
-				this->tails[entryId]->nextChunck = currChunck;
-				currChunck->prevChunck = this->tails[entryId];
-				this->tails[entryId] = currChunck;
+				this->freeBlockHead = nullptr;
 			}
-			this->updateEntries();
+
+			--this->numOfFreeListChuncks;
+
 		}
 
-		[[nodiscard]] mem_t computeEntryId(mem_t needBytes) const noexcept
+		void addChunck(mem_t memOffset, mem_t numOfBytes)
 		{
-			if (needBytes == 0)
-				return invalidEntryId_t;
-			return (((needBytes - 1) * numOfSegments) / maxBlockBytes);
+
+			assert(this->numOfFreeListChuncks < MAX_FRAGMENTS);
+
+			if (this->freeBlockHead == nullptr)
+			{
+				this->freeBlockHead = this->freelistEntry;
+				this->freeBlockTail = this->freeBlockHead;
+				this->freeBlockTail->prev = nullptr;
+			}
+			else
+			{
+				auto prevTail{ this->freeBlockTail };
+				this->freeBlockTail = this->freelistEntry + this->numOfFreeListChuncks;
+				prevTail->next = this->freeBlockTail;
+				this->freeBlockTail->prev = prevTail;
+				this->freeBlockTail->prev = this->freeBlockTail->prev;
+			}
+			this->freeBlockTail->next = nullptr;
+
+			this->freeBlockTail->memOffset = memOffset;
+			this->freeBlockTail->numOfBytes = numOfBytes;
+
+			++this->numOfFreeListChuncks;
+
 		}
 
 	private:
 		Source source;
 
-		Chunck chuncks[numOfChuncks];
-		Chunck* entries[numOfSegments];
-		Chunck* tails[numOfSegments];
+		Chunck* freelistEntry{ nullptr };
+
+		Chunck* freeBlockHead{ nullptr };
+		Chunck* freeBlockTail{ nullptr };
+		size_t numOfFreeListChuncks{ 0 };
+		size_t chuncksCapacity{ MAX_FRAGMENTS };
 
 	};
 

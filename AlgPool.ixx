@@ -1,8 +1,8 @@
-export module AlgPool;
+export module hfog.Algorithms.Pool;
 
-import MemoryUtils;
-import MemoryBlock;
-import SourcesCommon;
+import hfog.MemoryUtils;
+import hfog.MemoryBlock;
+import hfog.Sources.Common;
 
 static constexpr auto invalidEntryId_t{ invalidMem_t };
 

@@ -1,23 +1,23 @@
 #include "pch.h"
 
-import AlgStack;
-import AlgNull;
-import AlgUnified;
+import hfog.Algorithms.Stack;
+import hfog.Algorithms.Null;
+import hfog.Algorithms.Islands;
 
-import SourceStack;
-import SourceExt;
+import hfog.Sources.Stack;
+import hfog.Sources.Ext;
 
-import GarbageWriter;
-import StructureFallback;
+import hfog.GarbageWriter;
+import hfog.Structures.Fallback;
 
-import hfogCore;
+import hfog.Core;
 
 using namespace hfog::MemoryUtils::Literals;
 
 using garbageWriter_t = hfog::GarbageWriter::ByteWriter<0xFA, 0xAF>;
 
 using primaryAlg_t = hfog::Algorithms::Stack<hfog::Sources::Stack<32_B, garbageWriter_t>, 16_B>;
-using secondaryAlg_t = hfog::Algorithms::Unified<hfog::Sources::Stack<32_B, garbageWriter_t>, 16_B, 2, 1>;
+using secondaryAlg_t = hfog::Algorithms::Islands<hfog::Sources::Stack<32_B, garbageWriter_t>, 16_B, 2, 1>;
 static_assert(hfog::CtAllocator<hfog::Structures::Fallback<primaryAlg_t, secondaryAlg_t>>);
 
 TEST(Structures, tsFallback)

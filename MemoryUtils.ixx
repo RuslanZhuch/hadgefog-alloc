@@ -3,7 +3,7 @@ module;
 #include <concepts>
 #include <limits>
 
-export module MemoryUtils;
+export module hfog.MemoryUtils;
 
 export using mem_t = size_t;
 export using byte_t = unsigned char;

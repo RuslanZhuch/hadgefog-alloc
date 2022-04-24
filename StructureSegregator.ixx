@@ -1,7 +1,7 @@
-export module StructureSegregator;
+export module hfog.Structures.Segregator;
 
-import hfogCore;
-import MemoryBlock;
+import hfog.Core;
+import hfog.MemoryBlock;
 
 export namespace hfog::Structures
 {

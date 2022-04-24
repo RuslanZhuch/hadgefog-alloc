@@ -3,7 +3,7 @@ module;
 #include <algorithm>
 #include <optional>
 
-export module Heap;
+export module hfog.Heap;
 
 export namespace hfog::Supports
 {

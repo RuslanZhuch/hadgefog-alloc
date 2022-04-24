@@ -1,6 +1,6 @@
-export module AlgNull;
+export module hfog.Algorithms.Null;
 
-export import MemoryBlock;
+export import hfog.MemoryBlock;
 
 export namespace hfog::Algorithms
 {

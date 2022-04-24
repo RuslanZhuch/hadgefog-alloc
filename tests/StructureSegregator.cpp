@@ -1,14 +1,14 @@
 #include "pch.h"
 
-import AlgUnified;
+import hfog.Algorithms.Islands;
 
-import SourceStack;
-import SourceExt;
+import hfog.Sources.Stack;
+import hfog.Sources.Ext;
 
-import GarbageWriter;
-import StructureSegregator;
+import hfog.GarbageWriter;
+import hfog.Structures.Segregator;
 
-import hfogCore;
+import hfog.Core;
 
 using namespace hfog::MemoryUtils::Literals;
 
@@ -22,8 +22,8 @@ static constexpr auto gRightReleaseBytes{ 0xBE };
 using garbageWriterLeft_t = hfog::GarbageWriter::ByteWriter<gLeftInitBytes, gLeftReleaseBytes>;
 using garbageWriterRight_t = hfog::GarbageWriter::ByteWriter<gRightInitBytes, gRightReleaseBytes>;
 
-using leftAlg_t = hfog::Algorithms::Unified<hfog::Sources::Stack<128_B, garbageWriterLeft_t>, 16_B, 4, 2>;
-using rightAlg_t = hfog::Algorithms::Unified<hfog::Sources::Stack<640_B, garbageWriterRight_t>, 80_B, 4, 2>;
+using leftAlg_t = hfog::Algorithms::Islands<hfog::Sources::Stack<128_B, garbageWriterLeft_t>, 16_B, 4, 2>;
+using rightAlg_t = hfog::Algorithms::Islands<hfog::Sources::Stack<640_B, garbageWriterRight_t>, 80_B, 4, 2>;
 static_assert(hfog::CtAllocator<hfog::Structures::Segregator<leftAlg_t, rightAlg_t, 64_B>>);
 
 TEST(Structures, tsSegregator)

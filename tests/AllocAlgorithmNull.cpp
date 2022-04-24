@@ -1,9 +1,9 @@
 #include "pch.h"
 
-import AlgNull;
-import MemoryUtils;
+import hfog.Algorithms.Null;
+import hfog.MemoryUtils;
 
-import hfogCore;
+import hfog.Core;
 
 using namespace hfog::MemoryUtils::Literals;
 

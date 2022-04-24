@@ -6,11 +6,11 @@
 
 #include "google benchmark/headers/benchmark.h"
 
-import MemoryUtils;
-import MemoryBlock;
-import SourceHeap;
-import SourceExt;
-import SourceStack;
+import hfog.MemoryUtils;
+import hfog.MemoryBlock;
+import hfog.Source.Heap;
+import hfog.Source.Ext;
+import hfog.Source.Stack;
 
 using namespace hfog::MemoryUtils::Literals;
 

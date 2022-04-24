@@ -1,10 +1,10 @@
-export module SourceStack;
+export module hfog.Sources.Stack;
 
-export import MemoryBlock;
-export import MemoryUtils;
-export import GarbageWriter;
+export import hfog.MemoryBlock;
+export import hfog.MemoryUtils;
+export import hfog.GarbageWriter;
 
-import hfogCore;
+import hfog.Core;
 
 export namespace hfog::Sources
 {

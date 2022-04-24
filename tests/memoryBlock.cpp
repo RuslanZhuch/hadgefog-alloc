@@ -2,7 +2,7 @@
 
 #include <type_traits>
 
-import MemoryBlock;
+import hfog.MemoryBlock;
 
 using namespace hfog::MemoryUtils::Literals;
 

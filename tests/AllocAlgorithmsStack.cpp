@@ -1,12 +1,12 @@
 #include "pch.h"
 
-import SourceExt;
-import SourceStack;
-import MemoryUtils;
+import hfog.Sources.Ext;
+import hfog.Sources.Stack;
+import hfog.MemoryUtils;
 
-import hfogCore;
+import hfog.Core;
 
-import AlgStack;
+import hfog.Algorithms.Stack;
 
 using namespace hfog::MemoryUtils::Literals;
 

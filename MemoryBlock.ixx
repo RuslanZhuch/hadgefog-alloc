@@ -1,7 +1,7 @@
 module;
 #include <utility>
-export module MemoryBlock;
-export import MemoryUtils;
+export module hfog.MemoryBlock;
+export import hfog.MemoryUtils;
 
 export namespace hfog
 {

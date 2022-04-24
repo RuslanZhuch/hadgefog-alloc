@@ -4,8 +4,8 @@ module;
 #include <concepts>
 #include <cstring>
 
-export module GarbageWriter;
-import MemoryUtils;
+export module hfog.GarbageWriter;
+import hfog.MemoryUtils;
 
 template<typename T>
 concept CtSizeIsOne = requires(T t) { requires sizeof(T) == 1; };

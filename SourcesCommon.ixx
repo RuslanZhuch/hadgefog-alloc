@@ -2,9 +2,9 @@ module;
 #include <utility>
 #include <concepts>
 
-export module SourcesCommon;
-import MemoryUtils;
-import MemoryBlock;
+export module hfog.Sources.Common;
+import hfog.MemoryUtils;
+import hfog.MemoryBlock;
 
 export namespace hfog::Sources
 {

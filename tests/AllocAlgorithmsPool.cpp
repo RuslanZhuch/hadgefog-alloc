@@ -1,11 +1,11 @@
 #include "pch.h"
 
-import AlgPool;
+import hfog.Algorithms.Pool;
 
-import SourceExt;
-import SourceStack;
+import hfog.Sources.Ext;
+import hfog.Sources.Stack;
 
-import hfogCore;
+import hfog.Core;
 
 using namespace hfog::MemoryUtils::Literals;
 
