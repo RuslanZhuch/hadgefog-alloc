@@ -2,7 +2,7 @@
 
 import hfog.Algorithms.Islands;
 
-import hfog.Sources.Stack;
+import hfog.Sources.Local;
 import hfog.Sources.Ext;
 
 import hfog.GarbageWriter;
@@ -22,8 +22,8 @@ static constexpr auto gRightReleaseBytes{ 0xBE };
 using garbageWriterLeft_t = hfog::GarbageWriter::ByteWriter<gLeftInitBytes, gLeftReleaseBytes>;
 using garbageWriterRight_t = hfog::GarbageWriter::ByteWriter<gRightInitBytes, gRightReleaseBytes>;
 
-using leftAlg_t = hfog::Algorithms::Islands<hfog::Sources::Stack<128_B, garbageWriterLeft_t>, 16_B, 4, 2>;
-using rightAlg_t = hfog::Algorithms::Islands<hfog::Sources::Stack<640_B, garbageWriterRight_t>, 80_B, 4, 2>;
+using leftAlg_t = hfog::Algorithms::Islands<hfog::Sources::Local<128_B, garbageWriterLeft_t>, 16_B, 4, 2>;
+using rightAlg_t = hfog::Algorithms::Islands<hfog::Sources::Local<640_B, garbageWriterRight_t>, 80_B, 4, 2>;
 static_assert(hfog::CtAllocator<hfog::Structures::Segregator<leftAlg_t, rightAlg_t, 64_B>>);
 
 TEST(Structures, tsSegregator)

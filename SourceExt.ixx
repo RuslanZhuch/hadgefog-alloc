@@ -6,9 +6,10 @@ export import hfog.GarbageWriter;
 
 import hfog.Core;
 
+import hfog.Protect;
+
 export namespace hfog::Sources
 {
-
 
 	template <GarbageWriter::CtGarbageWriter<byte_t> garbageWriterOp = GarbageWriter::Default>
 	class External
@@ -31,22 +32,11 @@ export namespace hfog::Sources
 
 			MemoryBlock memBlock;
 
-//			if constexpr (bX64)
-//			{
-//				const auto bInRange{ offset + size <= this->extMemoryBlock.size };
-//
-//				byte_t* path[] = { nullptr, this->extMemoryBlock.ptr + offset };
-//				memBlock.ptr = path[bInRange];
-//				memBlock.size = size * bInRange;
-//			}
-//			else
-//			{
-				if (offset + size > this->extMemoryBlock.size)
-					return memBlock;
-
-				memBlock.ptr = this->extMemoryBlock.ptr + offset;
-				memBlock.size = size;
-//			}
+			if (offset + size > this->extMemoryBlock.size)
+				return memBlock;
+				
+			memBlock.ptr = this->extMemoryBlock.ptr + offset;
+			memBlock.size = size;
 
 			garbageWriterOp::init(memBlock.ptr, 0, memBlock.size);
 			garbageWriterOp::write(memBlock.ptr, 0, memBlock.size);
@@ -57,6 +47,10 @@ export namespace hfog::Sources
 
 		void releaseMemory(const MemoryBlock& memBlock) noexcept
 		{
+			if (!hfog::assertThatValidPtr(memBlock.ptr, "(hfog::Sources::External::releaseMemory) memoryBlock pointer is invalid") ||
+				!hfog::assertThatLessOrEq(memBlock.ptr - this->extMemoryBlock.ptr + memBlock.size, this->extMemoryBlock.size,
+					"(hfog::Sources::External::releaseMemory) memoryBlock block is off limits"))
+				return;
 			garbageWriterOp::clear(memBlock.ptr, 0, memBlock.size);
 		}
 
@@ -67,6 +61,11 @@ export namespace hfog::Sources
 
 		[[nodiscard]] mem_t getOffset(byte_t* ptr) const noexcept
 		{
+
+			if (!hfog::assertThatValidPtr(ptr, "(hfog::Sources::External::getOffset) pointer is invalid") ||
+				!hfog::assertThatLessOrEq(ptr - this->extMemoryBlock.ptr, this->extMemoryBlock.size,
+					"(hfog::Sources::External::getOffset) pointer is off limits"))
+				return invalidMem_t;
 
 			auto bInRange{ ptr != nullptr };
 			bInRange &= (ptr >= this->extMemoryBlock.ptr);

@@ -4,6 +4,8 @@ import hfog.MemoryUtils;
 import hfog.MemoryBlock;
 import hfog.Sources.Common;
 
+import hfog.Protect;
+
 inline constexpr auto invalidEntryId_t{ invalidMem_t };
 
 export namespace hfog::Algorithms
@@ -72,11 +74,16 @@ export namespace hfog::Algorithms
 		{
 			const auto alignNumOfBytes{ alignFunc::compute(numOfBytes) };
 
+			assertThatLessOrEq(alignNumOfBytes, maxBlockBytes, "(hfog::Algorithms::Islands) Too many bytes to allocate");
 			if (alignNumOfBytes > maxBlockBytes)
+			{
 				return {};
+			}
 
 			const auto entryId{ this->computeEntryId(alignNumOfBytes) };
 			auto currChunck{ this->entries[entryId] };
+
+			assertThatValidPtr(currChunck, "(hfog::Algorithms::Islands) Failed to allocate new chunck");
 			if (currChunck == nullptr)
 				return {};
 
@@ -85,6 +92,8 @@ export namespace hfog::Algorithms
 			const auto memoryOffset{ rootMemOffset + localMemOffset };
 
 			const auto outMemory{ this->source.getMemory(memoryOffset, alignNumOfBytes) };
+
+			assertThatValidPtr(outMemory.ptr, "(hfog::Algorithms::Islands) Failed to gather memory from memory source");
 			if (outMemory.ptr == nullptr)
 			{
 				return outMemory;
@@ -157,6 +166,9 @@ export namespace hfog::Algorithms
 		{
 			
 			const auto memOffset{ this->source.getOffset(block.ptr) };
+			if (memOffset == invalidMem_t)
+				return;
+
 			this->source.releaseMemory(block);
 
 			const auto chunckId{ memOffset / maxBlockBytes };

@@ -28,11 +28,17 @@
     <ClCompile Include="Heap.ixx" />
     <ClCompile Include="hfogAlloc.ixx" />
     <ClCompile Include="hfogCore.ixx" />
+    <ClCompile Include="hfogProtect.ixx" />
+    <ClCompile Include="hfogProtectionHook.cpp" />
+    <ClCompile Include="includes\trampa-key\Assertion.ixx" />
+    <ClCompile Include="includes\trampa-key\Hook.ixx" />
+    <ClCompile Include="includes\trampa-key\trampakey.ixx" />
+    <ClCompile Include="includes\trampa-key\Value.ixx" />
     <ClCompile Include="MemoryBlock.ixx" />
     <ClCompile Include="MemoryUtils.ixx" />
     <ClCompile Include="SourceExt.ixx" />
     <ClCompile Include="SourcesCommon.ixx" />
-    <ClCompile Include="SourceStack.ixx" />
+    <ClCompile Include="SourceLocal.ixx" />
     <ClCompile Include="StructureFallback.ixx" />
     <ClCompile Include="StructureSegregator.ixx" />
   </ItemGroup>
@@ -113,7 +119,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnableModules>true</EnableModules>
@@ -134,7 +140,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnableModules>true</EnableModules>
@@ -157,7 +163,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnableModules>true</EnableModules>
@@ -178,7 +184,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnableModules>true</EnableModules>

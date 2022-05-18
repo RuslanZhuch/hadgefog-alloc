@@ -73,7 +73,7 @@ static void BM_Sources_External_ReleaseAll(benchmark::State& state) {
 
 static void BM_Sources_Stack_ReleaseAll(benchmark::State& state) {
 
-    hfog::Sources::Stack<128_B * 100> stack;
+    hfog::Sources::Local<128_B * 100> stack;
     measure(state, [&]()
     {
         sources_T_ReleaseAll(stack);
@@ -142,7 +142,7 @@ template <mem_t allocSize, mem_t numOfElements, mem_t useElements>
 static void BM_Sources_Stack_LinearResize(benchmark::State& state) {
     static_assert(numOfElements >= useElements);
 
-    hfog::Sources::Stack<allocSize * numOfElements> src;
+    hfog::Sources::Local<allocSize * numOfElements> src;
 
     hfog::MemoryBlock blocks[numOfElements];
     measure(state, [&]()
@@ -195,7 +195,7 @@ static void BM_Alg_Linear_Ext(benchmark::State& state) {
 template <mem_t allocSize, int numOfAllocs, size_t buffLen>
 static void BM_Alg_Linear_Stack(benchmark::State& state) {
 
-    hfog::Algorithms::Linear<hfog::Sources::Stack<allocSize * buffLen, hfog::GarbageWriter::Default>, 16_B> alg;
+    hfog::Algorithms::Linear<hfog::Sources::Local<allocSize * buffLen, hfog::GarbageWriter::Default>, 16_B> alg;
     
     measure(state, [&]()
     {
@@ -267,7 +267,7 @@ static void BM_Alg_Stack_Ext(benchmark::State& state) {
 template <mem_t allocSize, int numOfAllocs, size_t buffLen>
 static void BM_Alg_Stack_Stack(benchmark::State& state) {
 
-    hfog::Algorithms::Stack<hfog::Sources::Stack<allocSize* buffLen, hfog::GarbageWriter::Default>, 16_B> alg;
+    hfog::Algorithms::Stack<hfog::Sources::Local<allocSize* buffLen, hfog::GarbageWriter::Default>, 16_B> alg;
 
     measure(state, [&]()
     {

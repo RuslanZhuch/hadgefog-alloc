@@ -8,7 +8,7 @@ export import hfog.Algorithms.Pool;
 export import hfog.Algorithms.Islands;
 export import hfog.Algorithms.Unified;
 
-import hfog.Sources.Stack;
+import hfog.Sources.Local;
 import hfog.Sources.Ext;
 
 export namespace hfog::Alloc
@@ -20,7 +20,7 @@ export namespace hfog::Alloc
 	//Stack aliases
 	template <mem_t alignment, mem_t stackSize,
 		hfog::GarbageWriter::CtGarbageWriter<byte_t> GWriter = hfog::GarbageWriter::Default>
-	using Stack = Algorithms::Stack<hfog::Sources::Stack<stackSize, GWriter>, alignment>;
+	using Stack = Algorithms::Stack<hfog::Sources::Local<stackSize, GWriter>, alignment>;
 
 	template <mem_t alignment,
 		hfog::GarbageWriter::CtGarbageWriter<byte_t> GWriter = hfog::GarbageWriter::Default>
@@ -29,7 +29,7 @@ export namespace hfog::Alloc
 	//Pool aliases
 	template <mem_t alignment, size_t numOfChunks,
 		hfog::GarbageWriter::CtGarbageWriter<byte_t> GWriter = hfog::GarbageWriter::Default>
-		using Pool = Algorithms::Pool<hfog::Sources::Stack<alignment * numOfChunks, GWriter>,
+		using Pool = Algorithms::Pool<hfog::Sources::Local<alignment * numOfChunks, GWriter>,
 		alignment, numOfChunks>;
 
 	template <mem_t alignment, size_t numOfChunks,
@@ -40,7 +40,7 @@ export namespace hfog::Alloc
 	//Islands aliases
 	template <mem_t alignment, mem_t maxAllocateBytes, size_t numOfChunks,
 		hfog::GarbageWriter::CtGarbageWriter<byte_t> GWriter = hfog::GarbageWriter::Default>
-	using Islands = Algorithms::Islands<hfog::Sources::Stack<maxAllocateBytes * numOfChunks, GWriter>,
+	using Islands = Algorithms::Islands<hfog::Sources::Local<maxAllocateBytes * numOfChunks, GWriter>,
 		alignment, maxAllocateBytes / alignment, numOfChunks>;
 
 	template <mem_t alignment, mem_t maxAllocateBytes, size_t numOfChunks,
@@ -51,7 +51,7 @@ export namespace hfog::Alloc
 	//Unified aliases
 	template <mem_t alignment, mem_t maxAllocateBytes,
 		hfog::GarbageWriter::CtGarbageWriter<byte_t> GWriter = hfog::GarbageWriter::Default>
-	using Unified = Algorithms::Unified<hfog::Sources::Stack<
+	using Unified = Algorithms::Unified<hfog::Sources::Local<
 		maxAllocateBytes + hfog::Algorithms::computeFreelistMemorySize<maxAllocateBytes, alignment>(), GWriter>,
 		alignment, maxAllocateBytes>;
 

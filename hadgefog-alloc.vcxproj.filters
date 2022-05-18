@@ -19,6 +19,15 @@
     <Filter Include="lib\Misc">
       <UniqueIdentifier>{8708e80f-c574-4798-ac30-bc327960907d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lib\trampa">
+      <UniqueIdentifier>{bff7216d-a322-425a-983e-8a1209c27b30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external">
+      <UniqueIdentifier>{97c34a2b-5a7a-4868-8ff6-a78db79dcb6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external\trampa-key">
+      <UniqueIdentifier>{db5f075b-ac15-4ff6-8ddb-fe63a3896594}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MemoryBlock.ixx">
@@ -45,7 +54,7 @@
     <ClCompile Include="StructureFallback.ixx">
       <Filter>lib\Structures</Filter>
     </ClCompile>
-    <ClCompile Include="SourceStack.ixx">
+    <ClCompile Include="SourceLocal.ixx">
       <Filter>lib\MemorySources</Filter>
     </ClCompile>
     <ClCompile Include="SourceExt.ixx">
@@ -69,5 +78,21 @@
     <ClCompile Include="AlgUnified.ixx">
       <Filter>lib\Algorithms</Filter>
     </ClCompile>
+    <ClCompile Include="hfogProtect.ixx">
+      <Filter>lib</Filter>
+    </ClCompile>
+    <ClCompile Include="includes\trampa-key\Assertion.ixx">
+      <Filter>external\trampa-key</Filter>
+    </ClCompile>
+    <ClCompile Include="includes\trampa-key\Hook.ixx">
+      <Filter>external\trampa-key</Filter>
+    </ClCompile>
+    <ClCompile Include="includes\trampa-key\trampakey.ixx">
+      <Filter>external\trampa-key</Filter>
+    </ClCompile>
+    <ClCompile Include="includes\trampa-key\Value.ixx">
+      <Filter>external\trampa-key</Filter>
+    </ClCompile>
+    <ClCompile Include="hfogProtectionHook.cpp" />
   </ItemGroup>
 </Project>

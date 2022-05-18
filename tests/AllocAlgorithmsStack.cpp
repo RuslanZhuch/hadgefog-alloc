@@ -1,7 +1,7 @@
 #include "pch.h"
 
 import hfog.Sources.Ext;
-import hfog.Sources.Stack;
+import hfog.Sources.Local;
 import hfog.MemoryUtils;
 
 import hfog.Core;
@@ -11,185 +11,175 @@ import hfog.Algorithms.Stack;
 using namespace hfog::MemoryUtils::Literals;
 
 static_assert(hfog::CtAllocator<hfog::Algorithms::Stack<hfog::Sources::External<hfog::GarbageWriter::Default>, 16_B>>);
-static_assert(hfog::CtAllocator<hfog::Algorithms::Stack<hfog::Sources::Stack<128_B, hfog::GarbageWriter::Default>, 16_B>>);
+static_assert(hfog::CtAllocator<hfog::Algorithms::Stack<hfog::Sources::Local<128_B, hfog::GarbageWriter::Default>, 16_B>>);
 
-TEST(AllocAlgorithms, tsStackExt)
+static constexpr auto ALIGNMENT{ 16_B };
+
+using sourceExternal_t = hfog::Sources::External<hfog::GarbageWriter::ByteWriter<SET_BYTES, CLEAR_BYTES>>;
+using stackExt_t = hfog::Algorithms::Stack<sourceExternal_t, ALIGNMENT>;
+static constexpr auto BUFFER_LEN{ 128_B };
+
+static const auto& generateStackExtMemBlock()
+{
+	static byte_t extMemBuffer[BUFFER_LEN];
+	std::memset(extMemBuffer, 0, sizeof(extMemBuffer));
+
+	static hfog::MemoryBlock extMemBlock;
+	extMemBlock.ptr = extMemBuffer;
+	extMemBlock.size = BUFFER_LEN;
+
+	return extMemBlock;
+
+}
+
+static void tsSimpleImpl(auto& algStack)
 {
 
-	using source_t = hfog::Sources::External<hfog::GarbageWriter::ByteWriter<0xFA, 0xAF>>;
-	const auto alignment{ 16_B };
+	static constexpr auto ALLOC_SIZE{ 32_B };
 
-	static constexpr auto extBufferLen{ 128_B };
-	byte_t extMemBuffer[extBufferLen];
+	const auto memBlock{ algStack.allocate(ALLOC_SIZE) };
+	EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, ALLOC_SIZE, SET_BYTES));
+	EXPECT_TRUE(algStack.getIsOwner(memBlock.ptr));
+	EXPECT_NE(memBlock.ptr, nullptr);
+	EXPECT_EQ(memBlock.size, ALLOC_SIZE);
+	algStack.deallocate(memBlock);
+	EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, ALLOC_SIZE, CLEAR_BYTES));
+	EXPECT_FALSE(algStack.getIsOwner(memBlock.ptr));
+}
 
-	hfog::MemoryBlock extMemBlock;
-	extMemBlock.ptr = extMemBuffer;
-	extMemBlock.size = extBufferLen;
+static void tsDeallocateionImpl(auto& algStack)
+{
+	
+	static constexpr auto ALLOC_SIZE{ 32_B };
 
-	hfog::Algorithms::Stack<source_t, alignment> algStack(extMemBlock);
+	const auto memBlock{ algStack.allocate(ALLOC_SIZE) };
+	EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, ALLOC_SIZE, SET_BYTES));
+	EXPECT_TRUE(algStack.getIsOwner(memBlock.ptr));
+	EXPECT_NE(memBlock.ptr, nullptr);
+	EXPECT_EQ(memBlock.size, ALLOC_SIZE);
 
-	{
-		const auto memBlock{ algStack.allocate(32_B) };
-		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 32_B, 0xFA));
-		EXPECT_TRUE(algStack.getIsOwner(memBlock.ptr));
-		EXPECT_NE(memBlock.ptr, nullptr);
-		EXPECT_EQ(memBlock.size, 32_B);
-		algStack.deallocate(memBlock);
-		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 32_B, 0xAF));
-		EXPECT_FALSE(algStack.getIsOwner(memBlock.ptr));
-	}
+	const auto memBlock2{ algStack.allocate(ALLOC_SIZE) };
+	EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0_B, ALLOC_SIZE, SET_BYTES));
+	EXPECT_TRUE(algStack.getIsOwner(memBlock2.ptr));
+	EXPECT_NE(memBlock2.ptr, nullptr);
+	EXPECT_EQ(memBlock2.size, ALLOC_SIZE);
 
-	{
+	algStack.deallocate(memBlock);
+	EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, ALLOC_SIZE, SET_BYTES));
+	EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0_B, ALLOC_SIZE, SET_BYTES));
+	EXPECT_TRUE(algStack.getIsOwner(memBlock.ptr));
+	EXPECT_TRUE(algStack.getIsOwner(memBlock2.ptr));
 
-		const auto memBlock{ algStack.allocate(32_B) };
-		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 32_B, 0xFA));
-		EXPECT_TRUE(algStack.getIsOwner(memBlock.ptr));
-		EXPECT_NE(memBlock.ptr, nullptr);
-		EXPECT_EQ(memBlock.size, 32_B);
+	algStack.deallocate(memBlock2);
+	EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, ALLOC_SIZE, SET_BYTES));
+	EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0_B, ALLOC_SIZE, CLEAR_BYTES));
+	EXPECT_TRUE(algStack.getIsOwner(memBlock.ptr));
+	EXPECT_FALSE(algStack.getIsOwner(memBlock2.ptr));
 
-		const auto memBlock2{ algStack.allocate(32_B) };
-		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0_B, 32_B, 0xFA));
-		EXPECT_TRUE(algStack.getIsOwner(memBlock2.ptr));
-		EXPECT_NE(memBlock2.ptr, nullptr);
-		EXPECT_EQ(memBlock2.size, 32_B);
+	algStack.deallocate(memBlock);
+	EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, ALLOC_SIZE, CLEAR_BYTES));
+	EXPECT_FALSE(algStack.getIsOwner(memBlock.ptr));
 
-		algStack.deallocate(memBlock);
-		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 32_B, 0xFA));
-		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0_B, 32_B, 0xFA));
-		EXPECT_TRUE(algStack.getIsOwner(memBlock.ptr));
-		EXPECT_TRUE(algStack.getIsOwner(memBlock2.ptr));
+	const auto memBlock3{ algStack.allocate(ALLOC_SIZE) };
+	EXPECT_TRUE(getValuesAre(memBlock3.ptr, 0_B, ALLOC_SIZE, SET_BYTES));
+	EXPECT_TRUE(algStack.getIsOwner(memBlock3.ptr));
+	EXPECT_NE(memBlock3.ptr, nullptr);
+	EXPECT_EQ(memBlock3.size, ALLOC_SIZE);
 
-		algStack.deallocate(memBlock2);
-		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 32_B, 0xFA));
-		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0_B, 32_B, 0xAF));
-		EXPECT_TRUE(algStack.getIsOwner(memBlock.ptr));
-		EXPECT_FALSE(algStack.getIsOwner(memBlock2.ptr));
+	algStack.deallocate(memBlock3);
+	EXPECT_TRUE(getValuesAre(memBlock3.ptr, 0_B, ALLOC_SIZE, CLEAR_BYTES));
+	EXPECT_FALSE(algStack.getIsOwner(memBlock3.ptr));
+}
 
-		algStack.deallocate(memBlock);
-		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 32_B, 0xAF));
-		EXPECT_FALSE(algStack.getIsOwner(memBlock.ptr));
+static void tsOutOfMemoryImpl(auto& algStack)
+{
 
-		const auto memBlock3{ algStack.allocate(32_B) };
-		EXPECT_TRUE(getValuesAre(memBlock3.ptr, 0_B, 32_B, 0xFA));
-		EXPECT_TRUE(algStack.getIsOwner(memBlock3.ptr));
-		EXPECT_NE(memBlock3.ptr, nullptr);
-		EXPECT_EQ(memBlock3.size, 32_B);
 
-		algStack.deallocate(memBlock3);
-		EXPECT_TRUE(getValuesAre(memBlock3.ptr, 0_B, 32_B, 0xAF));
-		EXPECT_FALSE(algStack.getIsOwner(memBlock3.ptr));
+	static constexpr auto ALLOC_SIZE_LARGE{ 96_B };
+	static constexpr auto ALLOC_SIZE_SMALL { 36_B };
 
-	}
+	const auto memBlock{ algStack.allocate(ALLOC_SIZE_LARGE) };
+	EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, ALLOC_SIZE_LARGE, SET_BYTES));
+	EXPECT_NE(memBlock.ptr, nullptr);
+	EXPECT_EQ(memBlock.size, ALLOC_SIZE_LARGE);
 
-	{
+	const auto memBlock2{ algStack.allocate(BUFFER_LEN) };
+	EXPECT_EQ(memBlock2.ptr, nullptr);
+	EXPECT_EQ(memBlock2.size, 0_B);
 
-		const auto memBlock{ algStack.allocate(96_B) };
-		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 96_B, 0xFA));
-		EXPECT_NE(memBlock.ptr, nullptr);
-		EXPECT_EQ(memBlock.size, 96_B);
+	EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, ALLOC_SIZE_SMALL, SET_BYTES));
 
-		const auto memBlock2{ algStack.allocate(extBufferLen) };
-		EXPECT_EQ(memBlock2.ptr, nullptr);
-		EXPECT_EQ(memBlock2.size, 0_B);
+	algStack.deallocate(memBlock);
+	EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, ALLOC_SIZE_SMALL, CLEAR_BYTES));
 
-		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 36_B, 0xFA));
+	const auto memBlock3{ algStack.allocate(BUFFER_LEN) };
+	EXPECT_TRUE(getValuesAre(memBlock3.ptr, 0_B, BUFFER_LEN, SET_BYTES));
+	EXPECT_NE(memBlock3.ptr, nullptr);
+	EXPECT_EQ(memBlock3.size, BUFFER_LEN);
 
-		algStack.deallocate(memBlock);
-		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 36_B, 0xAF));
+	algStack.deallocate(memBlock3);
+	EXPECT_TRUE(getValuesAre(memBlock3.ptr, 0_B, BUFFER_LEN, CLEAR_BYTES));
 
-		const auto memBlock3{ algStack.allocate(extBufferLen) };
-		EXPECT_TRUE(getValuesAre(memBlock3.ptr, 0_B, extBufferLen, 0xFA));
-		EXPECT_NE(memBlock3.ptr, nullptr);
-		EXPECT_EQ(memBlock3.size, extBufferLen);
+}
 
-		algStack.deallocate(memBlock3);
-		EXPECT_TRUE(getValuesAre(memBlock3.ptr, 0_B, extBufferLen, 0xAF));
+TEST(AllocAlgorithmsStack, tsSourceExtSimple)
+{
 
-	}
+	stackExt_t algStack(generateStackExtMemBlock());
+	tsSimpleImpl(algStack);
+	
+}
+
+TEST(AllocAlgorithmsStack, tsSourceExtDeallocation)
+{
+
+	stackExt_t algStack(generateStackExtMemBlock());
+	tsDeallocateionImpl(algStack);
+
+}
+
+TEST(AllocAlgorithmsStack, tsSourcesExtOutOfMemory)
+{
+
+	stackExt_t algStack(generateStackExtMemBlock());
+	tsOutOfMemoryImpl(algStack);
+
+}
+
+TEST(AllocAlgorithmsStack, tsSourceExtGetIsOwner)
+{
 
 	byte_t val{ 42 };
-	EXPECT_FALSE(algStack.getIsOwner(&val));
+	hfog::Algorithms::Stack<sourceExternal_t, ALIGNMENT> algStack(generateStackExtMemBlock());
 
+	EXPECT_FALSE(algStack.getIsOwner(&val));
 	EXPECT_FALSE(algStack.getIsOwner(nullptr));
 
 }
 
-TEST(AllocAlgorithms, tsStackStack)
+using sourceLocal_t = hfog::Sources::Local<BUFFER_LEN, hfog::GarbageWriter::ByteWriter<SET_BYTES, CLEAR_BYTES>>;
+using stackLocal_t = hfog::Algorithms::Stack<sourceLocal_t, ALIGNMENT>;
+
+TEST(AllocAlgorithmsStack, tsSourceLocalSimple)
 {
 
-	static constexpr auto extBufferLen{ 128_B };
-	using source_t = hfog::Sources::Stack<extBufferLen, hfog::GarbageWriter::ByteWriter<0xFA, 0xAF>>;
-	const auto alignment{ 16_B };
+	stackLocal_t algStack;
+	tsSimpleImpl(algStack);
 
-	hfog::Algorithms::Stack<source_t, alignment> algStack;
+}
 
-	{
+TEST(AllocAlgorithmsStack, tsSourceLocalDeallocation)
+{
 
-		const auto memBlock{ algStack.allocate(32_B) };
-		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 32_B, 0xFA));
-		EXPECT_NE(memBlock.ptr, nullptr);
-		EXPECT_EQ(memBlock.size, 32_B);
-		algStack.deallocate(memBlock);
-		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 32_B, 0xAF));
+	stackLocal_t algStack;
+	tsDeallocateionImpl(algStack);
 
-	}
+}
 
-	{
+TEST(AllocAlgorithms, tsSourcesLocalOutOfMemory)
+{
 
-		const auto memBlock{ algStack.allocate(32_B) };
-		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 32_B, 0xFA));
-		EXPECT_NE(memBlock.ptr, nullptr);
-		EXPECT_EQ(memBlock.size, 32_B);
-
-		const auto memBlock2{ algStack.allocate(32_B) };
-		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0_B, 32_B, 0xFA));
-		EXPECT_NE(memBlock2.ptr, nullptr);
-		EXPECT_EQ(memBlock2.size, 32_B);
-
-		algStack.deallocate(memBlock);
-		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 32_B, 0xFA));
-		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0_B, 32_B, 0xFA));
-
-		algStack.deallocate(memBlock2);
-		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 32_B, 0xFA));
-		EXPECT_TRUE(getValuesAre(memBlock2.ptr, 0_B, 32_B, 0xAF));
-
-		algStack.deallocate(memBlock);
-		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 32_B, 0xAF));
-
-		const auto memBlock3{ algStack.allocate(32_B) };
-		EXPECT_TRUE(getValuesAre(memBlock3.ptr, 0_B, 32_B, 0xFA));
-		EXPECT_NE(memBlock3.ptr, nullptr);
-		EXPECT_EQ(memBlock3.size, 32_B);
-
-		algStack.deallocate(memBlock3);
-		EXPECT_TRUE(getValuesAre(memBlock3.ptr, 0_B, 32_B, 0xAF));
-
-	}
-
-	{
-
-		const auto memBlock{ algStack.allocate(96_B) };
-		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 96_B, 0xFA));
-		EXPECT_NE(memBlock.ptr, nullptr);
-		EXPECT_EQ(memBlock.size, 96_B);
-
-		const auto memBlock2{ algStack.allocate(extBufferLen) };
-		EXPECT_EQ(memBlock2.ptr, nullptr);
-
-		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 36_B, 0xFA));
-
-		algStack.deallocate(memBlock);
-		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0_B, 36_B, 0xAF));
-
-		const auto memBlock3{ algStack.allocate(extBufferLen) };
-		EXPECT_TRUE(getValuesAre(memBlock3.ptr, 0_B, extBufferLen, 0xFA));
-		EXPECT_NE(memBlock3.ptr, nullptr);
-		EXPECT_EQ(memBlock3.size, extBufferLen);
-
-		algStack.deallocate(memBlock3);
-		EXPECT_TRUE(getValuesAre(memBlock3.ptr, 0_B, extBufferLen, 0xAF));
-
-	}
+	stackLocal_t algStack;
+	tsOutOfMemoryImpl(algStack);
 
 }

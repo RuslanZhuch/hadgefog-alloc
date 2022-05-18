@@ -11,7 +11,7 @@ TEST(Predefines, tsAlgStack)
 
 	static_assert(std::is_same_v<
 		hfog::Alloc::Stack<16_B, 128_B>,
-		hfog::Algorithms::Stack<hfog::Sources::Stack<128_B, hfog::GarbageWriter::Default>, 16_B>
+		hfog::Algorithms::Stack<hfog::Sources::Local<128_B, hfog::GarbageWriter::Default>, 16_B>
 	>);
 
 	static_assert(std::is_same_v<
@@ -36,12 +36,12 @@ TEST(Predefines, tsAlgPool)
 
 	static_assert(std::is_same_v<
 		hfog::Alloc::Pool<16_B, 4>,
-		hfog::Algorithms::Pool<hfog::Sources::Stack<64_B, hfog::GarbageWriter::Default>, 16_B, 4>
+		hfog::Algorithms::Pool<hfog::Sources::Local<64_B, hfog::GarbageWriter::Default>, 16_B, 4>
 	>);
 
 	static_assert(std::is_same_v<
 		hfog::Alloc::Pool<16_B, 4, hfog::GarbageWriter::ByteWriter<0xFA, 0xAF>>,
-		hfog::Algorithms::Pool<hfog::Sources::Stack<64_B, hfog::GarbageWriter::ByteWriter<0xFA, 0xAF>>, 16_B, 4>
+		hfog::Algorithms::Pool<hfog::Sources::Local<64_B, hfog::GarbageWriter::ByteWriter<0xFA, 0xAF>>, 16_B, 4>
 	>);
 
 	static_assert(std::is_same_v<
@@ -61,12 +61,12 @@ TEST(Predefines, tsAlgIslands)
 
 	static_assert(std::is_same_v<
 		hfog::Alloc::Islands<16_B, 64_B, 8>,
-		hfog::Algorithms::Islands<hfog::Sources::Stack<512_B, hfog::GarbageWriter::Default>, 16_B, 4, 8>
+		hfog::Algorithms::Islands<hfog::Sources::Local<512_B, hfog::GarbageWriter::Default>, 16_B, 4, 8>
 	>);
 
 	static_assert(std::is_same_v<
 		hfog::Alloc::Islands<16_B, 64_B, 8, hfog::GarbageWriter::ByteWriter<0xFA, 0xAF>>,
-		hfog::Algorithms::Islands<hfog::Sources::Stack<512_B, hfog::GarbageWriter::ByteWriter<0xFA, 0xAF>>, 16_B, 4, 8>
+		hfog::Algorithms::Islands<hfog::Sources::Local<512_B, hfog::GarbageWriter::ByteWriter<0xFA, 0xAF>>, 16_B, 4, 8>
 	>);
 
 	static_assert(std::is_same_v<
@@ -86,12 +86,12 @@ TEST(Predefines, tsAlgUnified)
 
 	static_assert(std::is_same_v<
 		hfog::Alloc::Unified<128_B, 1_kB>,
-		hfog::Algorithms::Unified<hfog::Sources::Stack<1152_B, hfog::GarbageWriter::Default>, 128_B, 1_kB>
+		hfog::Algorithms::Unified<hfog::Sources::Local<1152_B, hfog::GarbageWriter::Default>, 128_B, 1_kB>
 	>);
 
 	static_assert(std::is_same_v<
 		hfog::Alloc::Unified<128_B, 1_kB, hfog::GarbageWriter::ByteWriter<0xFA, 0xAF>>,
-		hfog::Algorithms::Unified<hfog::Sources::Stack<1152_B, hfog::GarbageWriter::ByteWriter<0xFA, 0xAF>>, 128_B, 1_kB>
+		hfog::Algorithms::Unified<hfog::Sources::Local<1152_B, hfog::GarbageWriter::ByteWriter<0xFA, 0xAF>>, 128_B, 1_kB>
 	>);
 
 	static_assert(std::is_same_v<

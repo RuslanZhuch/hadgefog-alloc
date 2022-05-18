@@ -9,6 +9,8 @@ import hfog.MemoryUtils;
 import hfog.MemoryBlock;
 import hfog.Sources.Common;
 
+import hfog.Protect;
+
 inline constexpr auto invalidEntryId_t{ invalidMem_t };
 
 
@@ -68,6 +70,7 @@ export namespace hfog::Algorithms
 		[[nodiscard]] MemoryBlock allocate(mem_t numOfBytes) noexcept
 		{
 
+			assertThatValidPtr(this->freeBlockHead, "(hfog::Algorithms::Unified) No free block available");
 			if (this->freeBlockHead == nullptr)
 				return {};
 
@@ -90,6 +93,7 @@ export namespace hfog::Algorithms
 				currChunck = currChunck->next;
 			}
 
+			assertThatGreaterOrEq(bestSize, alignNumOfBytes, "(hfog::Algorithms::Unified) Not enough space available");
 			if (bestSize < alignNumOfBytes)
 				return {};
 
@@ -154,6 +158,8 @@ export namespace hfog::Algorithms
 		{
 
 			auto memOffset = this->source.getOffset(block.ptr);
+			if (memOffset == invalidMem_t)
+				return;
 			auto numOfBytes = block.size;
 
 			Chunck* adjPrev{ nullptr };

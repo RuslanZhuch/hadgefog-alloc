@@ -4,7 +4,7 @@ import hfog.Algorithms.Stack;
 import hfog.Algorithms.Null;
 import hfog.Algorithms.Islands;
 
-import hfog.Sources.Stack;
+import hfog.Sources.Local;
 import hfog.Sources.Ext;
 
 import hfog.GarbageWriter;
@@ -16,8 +16,8 @@ using namespace hfog::MemoryUtils::Literals;
 
 using garbageWriter_t = hfog::GarbageWriter::ByteWriter<0xFA, 0xAF>;
 
-using primaryAlg_t = hfog::Algorithms::Stack<hfog::Sources::Stack<32_B, garbageWriter_t>, 16_B>;
-using secondaryAlg_t = hfog::Algorithms::Islands<hfog::Sources::Stack<32_B, garbageWriter_t>, 16_B, 2, 1>;
+using primaryAlg_t = hfog::Algorithms::Stack<hfog::Sources::Local<32_B, garbageWriter_t>, 16_B>;
+using secondaryAlg_t = hfog::Algorithms::Islands<hfog::Sources::Local<32_B, garbageWriter_t>, 16_B, 2, 1>;
 static_assert(hfog::CtAllocator<hfog::Structures::Fallback<primaryAlg_t, secondaryAlg_t>>);
 
 TEST(Structures, tsFallback)
