@@ -172,6 +172,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="benchmark.cpp" />
+    <ClCompile Include="Protection.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\hadgefog-alloc.vcxproj">

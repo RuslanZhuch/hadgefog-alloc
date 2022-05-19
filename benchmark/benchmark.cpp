@@ -8,9 +8,8 @@
 
 import hfog.MemoryUtils;
 import hfog.MemoryBlock;
-import hfog.Source.Heap;
-import hfog.Source.Ext;
-import hfog.Source.Stack;
+import hfog.Sources.Ext;
+import hfog.Sources.Local;
 
 using namespace hfog::MemoryUtils::Literals;
 
@@ -49,14 +48,6 @@ void measure(auto& state, auto cb)
 //        state.SetIterationTime(elapsed_seconds.count());
     }
 
-}
-
-static void BM_Sources_Heap_ReleaseAll(benchmark::State& state) {
-    hfog::Sources::Heap heap;
-    measure(state, [&]()
-    {
-        sources_T_ReleaseAll(heap);
-    });
 }
 
 static void BM_Sources_External_ReleaseAll(benchmark::State& state) {
@@ -109,19 +100,6 @@ void sources_T_LinearResize(Source& s, auto& blocks)
 }
 
 template <mem_t allocSize, mem_t numOfElements, mem_t useElements>
-static void BM_Sources_Heap_LinearResize(benchmark::State& state) {
-    static_assert(numOfElements >= useElements);
-
-    hfog::Sources::Heap src;
-    hfog::MemoryBlock blocks[numOfElements];
-
-    measure(state, [&]()
-    {
-        sources_T_LinearResize<decltype(src), allocSize, useElements>(src, blocks);
-    });
-}
-
-template <mem_t allocSize, mem_t numOfElements, mem_t useElements>
 static void BM_Sources_External_LinearResize(benchmark::State& state) {
     static_assert(numOfElements >= useElements);
 
@@ -151,59 +129,7 @@ static void BM_Sources_Stack_LinearResize(benchmark::State& state) {
     });
 }
 
-import AlgLinear;
-
-template <mem_t allocSize, int numOfAllocs>
-void alg_T_Linear(auto& alg)
-{
-    int numOfAllocsLeft{ numOfAllocs };
-    while (numOfAllocsLeft-- > 0)
-    {
-        const auto memBlock{ alg.allocate(allocSize) };
-        benchmark::DoNotOptimize(memBlock);
-    }
-    alg.deallocate({});
-}
-
-template <mem_t allocSize, int numOfAllocs, size_t buffLen>
-static void BM_Alg_Linear_Heap(benchmark::State& state) {
-    
-    hfog::Algorithms::Linear<hfog::Sources::Heap<hfog::GarbageWriter::Default>, 16_B> alg;
-
-    measure(state, [&]()
-    {
-        alg_T_Linear<allocSize, numOfAllocs>(alg);
-    });
-}
-
-template <mem_t allocSize, int numOfAllocs, size_t buffLen>
-static void BM_Alg_Linear_Ext(benchmark::State& state) {
-
-    byte_t* extBuffer = new byte_t[allocSize * buffLen];
-    hfog::MemoryBlock extMemBlock;
-    extMemBlock.ptr = extBuffer;
-    extMemBlock.size = sizeof(extBuffer);
-
-    hfog::Algorithms::Linear<hfog::Sources::External<hfog::GarbageWriter::Default>, allocSize> alg(extMemBlock);
-    
-    measure(state, [&]()
-    {
-        alg_T_Linear<allocSize, numOfAllocs>(alg);
-    });
-}
-
-template <mem_t allocSize, int numOfAllocs, size_t buffLen>
-static void BM_Alg_Linear_Stack(benchmark::State& state) {
-
-    hfog::Algorithms::Linear<hfog::Sources::Local<allocSize * buffLen, hfog::GarbageWriter::Default>, 16_B> alg;
-    
-    measure(state, [&]()
-    {
-        alg_T_Linear<allocSize, numOfAllocs>(alg);
-    });
-}
-
-import AlgStack;
+import hfog.Algorithms.Stack;
 
 template <mem_t allocSize, int numOfAllocs>
 void alg_T_Stack(auto& alg)
@@ -222,30 +148,6 @@ void alg_T_Stack(auto& alg)
         alg.deallocate(beginPtr);
         beginPtr.ptr -= allocSize;
     }
-}
-
-template <mem_t allocSize, int numOfAllocs, size_t buffLen>
-static void BM_Alg_Stack_Heap(benchmark::State& state) {
-
-    hfog::Algorithms::Stack<hfog::Sources::Heap<hfog::GarbageWriter::Default>, 16_B> alg;
-    byte_t* blocks[numOfAllocs];
-
-    
-    measure(state, [&]()
-    {
-        int allocId{ 0 };
-        auto beginPtr{ alg.allocate(allocSize) };
-        while (allocId < numOfAllocs - 1)
-        {
-            const auto memBlock{ alg.allocate(allocSize) };
-            blocks[allocId++] = memBlock.ptr;
-        }
-        while (allocId != 0)
-        {
-            alg.deallocate({ blocks[--allocId], allocSize });
-        }
-    });
-
 }
 
 template <mem_t allocSize, int numOfAllocs, size_t buffLen>

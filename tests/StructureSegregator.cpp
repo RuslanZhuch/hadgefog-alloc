@@ -26,7 +26,7 @@ using leftAlg_t = hfog::Algorithms::Islands<hfog::Sources::Local<128_B, garbageW
 using rightAlg_t = hfog::Algorithms::Islands<hfog::Sources::Local<640_B, garbageWriterRight_t>, 80_B, 4, 2>;
 static_assert(hfog::CtAllocator<hfog::Structures::Segregator<leftAlg_t, rightAlg_t, 64_B>>);
 
-TEST(Structures, tsSegregator)
+TEST(StructuresSegregator, tsComplex)
 {
 
 	hfog::Structures::Segregator<leftAlg_t, rightAlg_t, 64_B> segregator;
