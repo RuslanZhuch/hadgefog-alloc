@@ -464,15 +464,15 @@ TEST(AllocAlgorithmsIslands, tsCheckProtection)
 	{
 		islandsExt_t islands(generateIslandsExtMemoryBlock());
 		const auto failedMemBlock{ islands.allocate(ALIGNMENT * NUM_OF_CHUNCKS * 2) };
-		EXPECT_EQ(hfogprotect::instance()->getLastError().value().code, hfogprotect::ErrorCodes::NOT_IN_RANGE);
+		EXPECT_EQ(hfogprotect::getLastError().value().code, hfogprotect::ErrorCodes::NOT_IN_RANGE);
 
-		islands.allocate(ALIGNMENT * NUM_OF_CHUNCKS);
-		islands.allocate(ALIGNMENT * NUM_OF_CHUNCKS);
-		islands.allocate(ALIGNMENT * NUM_OF_CHUNCKS);
-		islands.allocate(ALIGNMENT * NUM_OF_CHUNCKS);
-		EXPECT_FALSE(hfogprotect::instance()->getLastError().has_value());
-		islands.allocate(ALIGNMENT * NUM_OF_CHUNCKS);
-		EXPECT_EQ(hfogprotect::instance()->getLastError().value().code, hfogprotect::ErrorCodes::INVALID_PTR);
+		const auto m2{ islands.allocate(ALIGNMENT * NUM_OF_CHUNCKS) };
+		const auto m3{ islands.allocate(ALIGNMENT * NUM_OF_CHUNCKS) };
+		const auto m4{ islands.allocate(ALIGNMENT * NUM_OF_CHUNCKS) };
+		const auto m5{ islands.allocate(ALIGNMENT * NUM_OF_CHUNCKS) };
+		EXPECT_FALSE(hfogprotect::getLastError().has_value());
+		const auto m6{ islands.allocate(ALIGNMENT * NUM_OF_CHUNCKS) };
+		EXPECT_EQ(hfogprotect::getLastError().value().code, hfogprotect::ErrorCodes::INVALID_PTR);
 	}
 
 	{
@@ -484,7 +484,7 @@ TEST(AllocAlgorithmsIslands, tsCheckProtection)
 		hfog::Algorithms::Islands<sourceExt_t, ALIGNMENT, NUM_OF_SEGMENTS, NUM_OF_CHUNCKS> islands(extBlock);
 
 		const auto failedMemBlock{ islands.allocate(ALIGNMENT * NUM_OF_CHUNCKS) };
-		EXPECT_EQ(hfogprotect::instance()->getLastError().value().code, hfogprotect::ErrorCodes::INVALID_PTR);
+		EXPECT_EQ(hfogprotect::getLastError().value().code, hfogprotect::ErrorCodes::INVALID_PTR);
 	}
 	
 }

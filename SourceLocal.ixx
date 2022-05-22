@@ -60,7 +60,7 @@ export namespace hfog::Sources
 		{
 
 			if (!hfog::assertThatValidPtr(ptr, "(hfog::Sources::Local::getOffset) pointer is invalid") ||
-				!hfog::assertThatLessOrEq(ptr - this->memBuffer, sizeof(this->memBuffer),
+				!hfog::assertThatLessOrEq(static_cast<mem_t>(ptr - this->memBuffer), sizeof(this->memBuffer),
 					"(hfog::Sources::Local::getOffset) pointer is off limits"))
 				return invalidMem_t;
 

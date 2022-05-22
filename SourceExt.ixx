@@ -63,7 +63,7 @@ export namespace hfog::Sources
 		{
 
 			if (!hfog::assertThatValidPtr(ptr, "(hfog::Sources::External::getOffset) pointer is invalid") ||
-				!hfog::assertThatLessOrEq(ptr - this->extMemoryBlock.ptr, this->extMemoryBlock.size,
+				!hfog::assertThatLessOrEq(static_cast<mem_t>(ptr - this->extMemoryBlock.ptr), this->extMemoryBlock.size,
 					"(hfog::Sources::External::getOffset) pointer is off limits"))
 				return invalidMem_t;
 

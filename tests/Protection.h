@@ -1,16 +1,15 @@
 #pragma once
+#include "pch.h"
+
 #include <string_view>
 #include <optional>
 //#include <variant>
 
 import trampa.key;
 
-class hfogprotect
+namespace hfogprotect
 {
-
-public:
-
-	enum class ErrorCodes
+	enum class ErrorCodes : uint64_t
 	{
 		INVALID_PTR,
 		NOT_IN_RANGE
@@ -18,32 +17,11 @@ public:
 
 	struct Error
 	{
-		std::string_view msg;
 		ErrorCodes code;
+		std::string_view msg;
 	};
 
-public:
-	[[nodiscard]] auto getLastError()
-	{
-		const auto error{ errorCause };
-		errorCause.reset();
-		return error;
-		//return nullptr;
-	}
-
-	void setErrorCode(const Error& cause)
-	{
-		this->errorCause = cause;
-	}
-
-	static auto* instance()
-	{
-		static hfogprotect p;
-		return &p;
-	}
-
-private:
-	std::optional<Error> errorCause;
+	[[nodiscard]] std::optional<hfogprotect::Error> getLastError();
 
 };
 

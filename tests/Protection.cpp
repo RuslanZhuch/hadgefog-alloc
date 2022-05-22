@@ -9,6 +9,16 @@
 import trampa.key;
 import hfog.Protect;
 
+static std::optional<hfogprotect::Error> errorCause;
+
+[[nodiscard]] std::optional<hfogprotect::Error> hfogprotect::getLastError()
+{
+	const auto error{ errorCause };
+	errorCause.reset();
+	return error;
+	//return nullptr;
+}
+
 [[nodiscard]] bool HfogHook::onAssertTriggered(const trampa::Assert::Cause& assertCause, [[maybe_unused]] std::string_view msg)
 {
 
@@ -26,7 +36,7 @@ import hfog.Protect;
 			error.code = hfogprotect::ErrorCodes::NOT_IN_RANGE;
 		}
 
-		hfogprotect::instance()->setErrorCode(error);
+		errorCause = error;
 
 	}, assertCause);
 

@@ -31,13 +31,13 @@ TEST(SourcesExternal, tsProtectionReleaseMemory)
 
 	hfog::MemoryBlock memBlock;
 	localSource.releaseMemory(memBlock);
-	EXPECT_EQ(hfogprotect::instance()->getLastError().value().code, hfogprotect::ErrorCodes::INVALID_PTR);
+	EXPECT_EQ(hfogprotect::getLastError().value().code, hfogprotect::ErrorCodes::INVALID_PTR);
 
-	EXPECT_FALSE(hfogprotect::instance()->getLastError().has_value());
+	EXPECT_FALSE(hfogprotect::getLastError().has_value());
 
 	const auto memBlockOffLimits{ localSource.getMemory(0_B, 16_B) };
-	const auto offset{ localSource.getOffset(memBlockOffLimits.ptr + BUFFER_SIZE + 16_B) };
-	EXPECT_EQ(hfogprotect::instance()->getLastError().value().code, hfogprotect::ErrorCodes::NOT_IN_RANGE);
+	[[maybe_unused]] const auto offset{ localSource.getOffset(memBlockOffLimits.ptr + BUFFER_SIZE + 16_B) };
+	EXPECT_EQ(hfogprotect::getLastError().value().code, hfogprotect::ErrorCodes::NOT_IN_RANGE);
 
 }
 

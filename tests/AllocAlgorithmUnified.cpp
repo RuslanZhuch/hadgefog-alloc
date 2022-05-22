@@ -360,24 +360,24 @@ using unifiedLocal_t = hfog::Algorithms::Unified<sourceLocal_t, ALIGNMENT, BUFFE
 TEST(AllocAlgorithmsUnified, tsSourceExtProtection)
 {
 
-	hfogprotect::instance()->getLastError();
+	const auto e{ hfogprotect::getLastError() };
 
 	{
 		unifiedExt_t unified(generateUnifiedExtMemBlockSmall());
 
-		unified.allocate(BUFFER_SIZE);
-		EXPECT_FALSE(hfogprotect::instance()->getLastError().has_value());
-		unified.allocate(BUFFER_SIZE);
-		EXPECT_EQ(hfogprotect::instance()->getLastError().value().code, hfogprotect::ErrorCodes::INVALID_PTR);
+		const auto m1{ unified.allocate(BUFFER_SIZE) };
+		EXPECT_FALSE(hfogprotect::getLastError().has_value());
+		const auto m2{ unified.allocate(BUFFER_SIZE) };
+		EXPECT_EQ(hfogprotect::getLastError().value().code, hfogprotect::ErrorCodes::INVALID_PTR);
 	}
 
 	{
 		unifiedExt_t unified(generateUnifiedExtMemBlockSmall());
 
-		unified.allocate(BUFFER_SIZE / 2);
-		EXPECT_FALSE(hfogprotect::instance()->getLastError().has_value());
-		unified.allocate(BUFFER_SIZE);
-		EXPECT_EQ(hfogprotect::instance()->getLastError().value().code, hfogprotect::ErrorCodes::NOT_IN_RANGE);
+		const auto m1{ unified.allocate(BUFFER_SIZE / 2) };
+		EXPECT_FALSE(hfogprotect::getLastError().has_value());
+		const auto m2{ unified.allocate(BUFFER_SIZE) };
+		EXPECT_EQ(hfogprotect::getLastError().value().code, hfogprotect::ErrorCodes::NOT_IN_RANGE);
 	}
 
 }
