@@ -18,9 +18,9 @@ export namespace hfog::Algorithms
 		static constexpr auto maxBlockBytes{ alignment * numOfChuncks };
 
 		struct Chunck {
-			bool isEmpty{ true };
-			mem_t memOffset;
 			Chunck* nextChunck{ nullptr };
+			mem_t globalOffset;
+			mem_t localOffset{};
 		};
 
 	public:
@@ -38,11 +38,11 @@ export namespace hfog::Algorithms
 
 			mem_t currMemOffset{ 0_B };
 			auto currentChunck{ this->chuncks };
-			currentChunck->memOffset = currMemOffset;
+			currentChunck->globalOffset = currMemOffset;
 			firstEmptyChunk = currentChunck;
 			for (mem_t i = 1; i < numOfChuncks; ++i) {
 				chuncks[i - 1].nextChunck = &chuncks[i];
-				chuncks[i].memOffset = currMemOffset + i * alignment;
+				chuncks[i].globalOffset = currMemOffset + i * alignment;
 			}
 			lastEmptyChunk = &chuncks[numOfChuncks - 1];
 
@@ -59,13 +59,13 @@ export namespace hfog::Algorithms
 				return MemoryBlock{};
 			}
 
-			const auto outMemory{ this->source.getMemory(firstEmptyChunk->memOffset, alignNumOfBytes) };
+			const auto outMemory{ this->source.getMemory(firstEmptyChunk->globalOffset + firstEmptyChunk->localOffset, alignNumOfBytes) };
 			if (outMemory.ptr == nullptr) {
 				return outMemory;
 			}
 			
 			auto currChunck = firstEmptyChunk;
-			firstEmptyChunk->isEmpty = false;
+			currChunck->localOffset += alignNumOfBytes;
 			firstEmptyChunk = firstEmptyChunk->nextChunck;
 			currChunck->nextChunck = nullptr;
 
@@ -84,13 +84,11 @@ export namespace hfog::Algorithms
 			
 			mem_t currMemOffset{ 0_B };
 			auto currentChunck{ this->chuncks };
-			currentChunck->isEmpty = true;
-			currentChunck->memOffset = currMemOffset;
+			currentChunck->localOffset = 0;
 			firstEmptyChunk = currentChunck;
 			for (mem_t i = 1; i < numOfChuncks; ++i) {
 				chuncks[i - 1].nextChunck = &chuncks[i];
-				chuncks[i].memOffset = currMemOffset + i * alignment;
-				chuncks[i].isEmpty = true;
+				chuncks[i].localOffset = 0;
 				chuncks[i].nextChunck = nullptr;
 			}
 			lastEmptyChunk = &chuncks[numOfChuncks - 1];
@@ -111,15 +109,16 @@ export namespace hfog::Algorithms
 
 			auto currChunck{ &this->chuncks[chunckId] };
 
-			if (currChunck->isEmpty) {
+			if (currChunck->localOffset == 0) {
 				return;
 			}
 			if (lastEmptyChunk != nullptr) {
 				lastEmptyChunk->nextChunck = currChunck;
 			}
+			
+			currChunck->localOffset = 0;
 			lastEmptyChunk = currChunck;
-			lastEmptyChunk->isEmpty = true;
-
+			
 			if (firstEmptyChunk == nullptr) {
 				firstEmptyChunk = lastEmptyChunk;
 			}
@@ -135,7 +134,7 @@ export namespace hfog::Algorithms
 
 			const auto chunckId{ checkMemoryOffset / alignment };
 
-			return !this->chuncks[chunckId].isEmpty;
+			return this->chuncks[chunckId].localOffset > 0;
 		}
 
 	private:
