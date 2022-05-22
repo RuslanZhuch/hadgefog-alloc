@@ -9,7 +9,7 @@ export namespace hfog
 	struct MemoryBlock
 	{
 
-		constexpr MemoryBlock() noexcept = default;
+		MemoryBlock() noexcept = default;
 		constexpr MemoryBlock(byte_t* ptr, mem_t size) noexcept
 			:ptr(ptr), size(size)
 		{	}

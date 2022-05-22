@@ -28,24 +28,9 @@ void sources_T_ReleaseAll(Source& s)
 
 void measure(auto& state, auto cb)
 {
-//    int microseconds = state.range(0);
-//    std::chrono::duration<double, std::nano> sleep_duration{
-//      static_cast<double>(microseconds)
-//    };
-
     for (auto _ : state)
     {
-
-//        auto start = std::chrono::high_resolution_clock::now();
-
         cb();
-
-//        auto end = std::chrono::high_resolution_clock::now();
-//        auto elapsed_seconds =
-//            std::chrono::duration_cast<std::chrono::duration<double>>(
-//                end - start);
-
-//        state.SetIterationTime(elapsed_seconds.count());
     }
 
 }
@@ -60,6 +45,7 @@ static void BM_Sources_External_ReleaseAll(benchmark::State& state) {
     {
         sources_T_ReleaseAll(external);
     });
+    
 }
 
 static void BM_Sources_Stack_ReleaseAll(benchmark::State& state) {
@@ -69,6 +55,7 @@ static void BM_Sources_Stack_ReleaseAll(benchmark::State& state) {
     {
         sources_T_ReleaseAll(stack);
     });
+    
 }
 
 template <typename Source, mem_t allocSize, mem_t useElements>
@@ -79,7 +66,6 @@ void sources_T_LinearResize(Source& s, auto& blocks)
     {
         const auto memBlock{ s.getMemory(allocSize * id, allocSize) };
         blocks[id++] = memBlock;
-        //benchmark::DoNotOptimize((*memBlock.ptr));
     }
     while (id > useElements / 2)
     {
@@ -89,7 +75,6 @@ void sources_T_LinearResize(Source& s, auto& blocks)
     {
         const auto memBlock{ s.getMemory(allocSize * id, allocSize) };
         blocks[id++] = memBlock;
-        //benchmark::DoNotOptimize((*memBlock.ptr));
     }
     while (true)
     {
@@ -167,7 +152,7 @@ static void BM_Alg_Stack_Ext(benchmark::State& state) {
 }
 
 template <mem_t allocSize, int numOfAllocs, size_t buffLen>
-static void BM_Alg_Stack_Stack(benchmark::State& state) {
+static void BM_Alg_Stack_Local(benchmark::State& state) {
 
     hfog::Algorithms::Stack<hfog::Sources::Local<allocSize* buffLen, hfog::GarbageWriter::Default>, 16_B> alg;
 
@@ -175,54 +160,17 @@ static void BM_Alg_Stack_Stack(benchmark::State& state) {
     {
         alg_T_Stack<allocSize, numOfAllocs>(alg);
     });
+    
 }
 
-////Sources
-//BENCHMARK(BM_Sources_Heap_ReleaseAll);
-//BENCHMARK(BM_Sources_External_ReleaseAll);
-//BENCHMARK(BM_Sources_Stack_ReleaseAll);
-//
-//BENCHMARK(BM_Sources_Heap_LinearResize<128_B, 100, 100>);
-//BENCHMARK(BM_Sources_External_LinearResize<128_B, 100, 100>);
-//BENCHMARK(BM_Sources_Stack_LinearResize<128_B, 100, 100>);
-//
-//BENCHMARK(BM_Sources_Heap_LinearResize<16_B, 100, 100>);
-//BENCHMARK(BM_Sources_External_LinearResize<16_B, 100, 100>);
-//BENCHMARK(BM_Sources_Stack_LinearResize<16_B, 100, 100>);
-//
-//BENCHMARK(BM_Sources_Heap_LinearResize<16_B, 100, 32>);
-//BENCHMARK(BM_Sources_External_LinearResize<16_B, 100, 32>);
-//BENCHMARK(BM_Sources_Stack_LinearResize<16_B, 100, 32>);
-//
-//BENCHMARK(BM_Sources_Heap_LinearResize<16_B, 32, 32>);
-//BENCHMARK(BM_Sources_External_LinearResize<16_B, 32, 32>);
-//BENCHMARK(BM_Sources_Stack_LinearResize<16_B, 32, 32>);
-// 
-//
-////Linear algorithm
-//BENCHMARK(BM_Alg_Linear_Heap<16_B, 32, 32>);
-//BENCHMARK(BM_Alg_Linear_Ext<16_B, 32, 32>);
-//BENCHMARK(BM_Alg_Linear_Stack<16_B, 32, 32>);
-//
-//BENCHMARK(BM_Alg_Linear_Heap<16_B, 32, 40 * 1024>);
-//BENCHMARK(BM_Alg_Linear_Ext<16_B, 32, 40 * 1024>);
-//BENCHMARK(BM_Alg_Linear_Stack<16_B, 32, 40 * 1024>);
-//
-//BENCHMARK(BM_Alg_Linear_Heap<16_B, 40 * 1024, 40 * 1024>);
-//BENCHMARK(BM_Alg_Linear_Ext<16_B, 40 * 1024, 40 * 1024>);
-//BENCHMARK(BM_Alg_Linear_Stack<16_B, 40 * 1024, 40 * 1024>);
-
 //Stack algorithm
-//BENCHMARK(BM_Alg_Stack_Heap<16_B, 32, 32>);
 BENCHMARK(BM_Alg_Stack_Ext<16_B, 32, 32>);
-BENCHMARK(BM_Alg_Stack_Stack<16_B, 32, 32>);// ->Iterations(1000000);
+BENCHMARK(BM_Alg_Stack_Local<16_B, 32, 32>);
 
-//BENCHMARK(BM_Alg_Stack_Heap<16_B, 32, 40 * 512>);
 BENCHMARK(BM_Alg_Stack_Ext<16_B, 32, 40 * 512>);
-BENCHMARK(BM_Alg_Stack_Stack<16_B, 32, 40 * 512>);// ->Iterations(1000000);
+BENCHMARK(BM_Alg_Stack_Local<16_B, 32, 40 * 512>);
 
-//BENCHMARK(BM_Alg_Stack_Heap<16_B, 40 * 512, 40 * 512>);
 BENCHMARK(BM_Alg_Stack_Ext<16_B, 40 * 512, 40 * 512>);
-BENCHMARK(BM_Alg_Stack_Stack<16_B, 40 * 512, 40 * 512>);// ->Iterations(1000000);
+BENCHMARK(BM_Alg_Stack_Local<16_B, 40 * 512, 40 * 512>);
 
 BENCHMARK_MAIN();

@@ -7,6 +7,7 @@
 #pragma warning(disable : 5050)
 #pragma warning(disable : 4710)
 #pragma warning(disable : 4711)
+#pragma warning(disable : 5045)
 
 #pragma warning( push )
 
