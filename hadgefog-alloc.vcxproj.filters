@@ -93,6 +93,6 @@
     <ClCompile Include="includes\trampa-key\Value.ixx">
       <Filter>external\trampa-key</Filter>
     </ClCompile>
-    <ClCompile Include="hfogProtectionHook.cpp" />
+    <ClCompile Include="hfogProtectionHook.h" />
   </ItemGroup>
 </Project>

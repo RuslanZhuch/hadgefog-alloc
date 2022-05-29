@@ -20,6 +20,7 @@ export namespace hfog::Algorithms
 	template <mem_t totalMemory, mem_t alignment>
 	consteval mem_t computeFreelistMemorySize()
 	{
+		//WTF all this magic???
 		return static_cast<mem_t>(totalMemory / alignment / 2.f + 0.5f) * 32;
 	}
 

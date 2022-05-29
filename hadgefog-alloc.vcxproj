@@ -29,7 +29,7 @@
     <ClCompile Include="hfogAlloc.ixx" />
     <ClCompile Include="hfogCore.ixx" />
     <ClCompile Include="hfogProtect.ixx" />
-    <ClCompile Include="hfogProtectionHook.cpp" />
+    <ClCompile Include="hfogProtectionHook.h" />
     <ClCompile Include="includes\trampa-key\Assertion.ixx" />
     <ClCompile Include="includes\trampa-key\Hook.ixx" />
     <ClCompile Include="includes\trampa-key\trampakey.ixx" />
