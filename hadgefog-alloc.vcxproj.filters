@@ -94,5 +94,8 @@
       <Filter>external\trampa-key</Filter>
     </ClCompile>
     <ClCompile Include="hfogProtectionHook.h" />
+    <ClCompile Include="AlgRing.ixx">
+      <Filter>lib\Algorithms</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

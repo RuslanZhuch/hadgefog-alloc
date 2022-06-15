@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="AlgNull.ixx" />
     <ClCompile Include="AlgPool.ixx" />
+    <ClCompile Include="AlgRing.ixx" />
     <ClCompile Include="AlgStack.ixx" />
     <ClCompile Include="AlgIslands.ixx" />
     <ClCompile Include="AlgUnified.ixx" />

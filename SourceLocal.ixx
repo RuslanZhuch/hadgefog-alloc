@@ -73,6 +73,11 @@ export namespace hfog::Sources
 			return static_cast<mem_t>(ptr - this->memBuffer);
 		}
 
+		[[nodiscard]] mem_t getMemorySize() const noexcept
+		{
+			return buffSize;
+		}
+
 	private:
 		byte_t memBuffer[buffSize];
 		

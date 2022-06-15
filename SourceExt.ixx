@@ -77,6 +77,11 @@ export namespace hfog::Sources
 
 		}
 
+		[[nodiscard]] mem_t getMemorySize() const noexcept
+		{
+			return extMemoryBlock.size;
+		}
+
 	private:
 		MemoryBlock extMemoryBlock;
 
