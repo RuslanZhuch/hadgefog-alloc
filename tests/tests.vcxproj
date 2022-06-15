@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AllocAlgorithmNull.cpp" />
+    <ClCompile Include="AllocAlgorithmRing.cpp" />
     <ClCompile Include="AllocAlgorithmsPool.cpp" />
     <ClCompile Include="AllocAlgorithmsStack.cpp" />
     <ClCompile Include="AllocAlgorithmIslands.cpp" />
