@@ -11,7 +11,7 @@ import hfog.Protect;
 export namespace hfog::Sources
 {
 
-	template <GarbageWriter::CtGarbageWriter<byte_t> garbageWriterOp = GarbageWriter::Default>
+	template <GarbageWriter::CtGarbageWriter garbageWriterOp = GarbageWriter::Default>
 	class External
 	{
 
