@@ -22,6 +22,7 @@ static constexpr auto BUFFER_LEN{ 256_B };
 
 static const auto& generateStackExtMemBlock()
 {
+
 	static byte_t extMemBuffer[BUFFER_LEN];
 	std::memset(extMemBuffer, 0, sizeof(extMemBuffer));
 
@@ -150,6 +151,75 @@ static void tsEdgeAllocationImpl(auto& algRing)
 
 }
 
+static void tsOneByOneWithWrappingImpl(auto& algRing)
+{
+
+	static constexpr auto ALLOC_SIZE{ 240_B };
+
+	constexpr auto NUM_OF_ALLOCS{ BUFFER_LEN / ALLOC_SIZE };
+
+	std::array<hfog::MemoryBlock, NUM_OF_ALLOCS> blocks;
+
+	const auto allocateSuccess = [&](mem_t allocSize)
+	{
+		const auto memBlock{ algRing.allocate(allocSize) };
+		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0, allocSize, SET_BYTES));
+		EXPECT_TRUE(algRing.getIsOwner(memBlock.ptr));
+		EXPECT_NE(memBlock.ptr, nullptr);
+		EXPECT_EQ(memBlock.size, allocSize);
+		return memBlock;
+	};
+
+	constexpr auto NUM_OF_ITERS{ 100 };
+
+	for (size_t iterId{ 0 }; iterId < NUM_OF_ITERS; ++iterId)
+	{
+		const auto blockLeft{ allocateSuccess(ALLOC_SIZE) };
+		algRing.deallocate(blockLeft);
+		const auto blockWrapped{ allocateSuccess(ALLOC_SIZE) };
+		algRing.deallocate(blockWrapped);
+		EXPECT_TRUE(getValuesAre(blockWrapped.ptr, 0, ALLOC_SIZE, CLEAR_BYTES));
+	}
+
+}
+
+static void tsBatchWrappingImpl(auto& algRing)
+{
+
+	static constexpr auto ALLOC_SIZE{ 128_B };
+	static constexpr auto ALLOC_SIZE_LARGE{ 144_B };
+	static constexpr auto ALLOC_SIZE_SMALL{ 64_B };
+
+	constexpr auto NUM_OF_ALLOCS{ BUFFER_LEN / ALLOC_SIZE };
+
+	std::array<hfog::MemoryBlock, NUM_OF_ALLOCS> blocks;
+
+	const auto allocateSuccess = [&](mem_t allocSize)
+	{
+		const auto memBlock{ algRing.allocate(allocSize) };
+		EXPECT_TRUE(getValuesAre(memBlock.ptr, 0, allocSize, SET_BYTES));
+		EXPECT_TRUE(algRing.getIsOwner(memBlock.ptr));
+		EXPECT_NE(memBlock.ptr, nullptr);
+		EXPECT_EQ(memBlock.size, allocSize);
+		return memBlock;
+	};
+
+	constexpr auto NUM_OF_ITERS{ 100 };
+
+	for (size_t iterId{ 0 }; iterId < NUM_OF_ITERS; ++iterId)
+	{
+		const auto blockLeft{ allocateSuccess(ALLOC_SIZE_LARGE) };
+		algRing.deallocate(blockLeft);
+		const auto blockWrapped{ allocateSuccess(ALLOC_SIZE) };
+		const auto blockWrappedAdd{ allocateSuccess(ALLOC_SIZE_SMALL) };
+		algRing.deallocate(blockWrapped);
+		EXPECT_TRUE(getValuesAre(blockWrapped.ptr, 0, ALLOC_SIZE, CLEAR_BYTES));
+		algRing.deallocate(blockWrappedAdd);
+		EXPECT_TRUE(getValuesAre(blockWrappedAdd.ptr, 0, ALLOC_SIZE_SMALL, CLEAR_BYTES));
+	}
+
+}
+
 static void tsDeallocationImpl(auto& algRing)
 {
 
@@ -195,6 +265,21 @@ TEST(AllocAlgorithmsRing, tsEdgeAllocation)
 
 	stackExt_t algRing(generateStackExtMemBlock());
 	tsEdgeAllocationImpl(algRing);
+
+}
+
+TEST(AllocAlgorithmsRing, tsOneByOneWithWrapping)
+{
+
+	stackExt_t algRing(generateStackExtMemBlock());
+	tsOneByOneWithWrappingImpl(algRing);
+
+}
+TEST(AllocAlgorithmsRing, tsBatchWrapping)
+{
+
+	stackExt_t algRing(generateStackExtMemBlock());
+	tsBatchWrappingImpl(algRing);
 
 }
 

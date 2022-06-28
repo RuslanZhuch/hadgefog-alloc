@@ -45,7 +45,8 @@ export namespace hfog::Algorithms
 			if (outMemory.ptr != nullptr)
 			{
 				this->allocateMemPoint = tryAllocatePoint;
-				this->roundupPoint = newRoundupPoint;
+				if (this->roundupPoint == invalidMem_t)
+					this->roundupPoint = newRoundupPoint;
 
 				this->allocateMemPoint = this->shiftPoint(this->allocateMemPoint, alignNumOfBytes);
 				this->allocatedBytes += alignNumOfBytes;
@@ -66,6 +67,12 @@ export namespace hfog::Algorithms
 			if (this->allocatedBytes == 0)
 				return;
 
+			if (this->deallocateMemPoint == this->roundupPoint)
+			{
+				this->deallocateMemPoint = 0;
+				this->roundupPoint = invalidMem_t;
+			}
+
 			const auto blockPtr{ block.ptr };
 			const auto blockSize{ block.size };
 
@@ -75,11 +82,6 @@ export namespace hfog::Algorithms
 				this->source.releaseMemory(block);
 				this->deallocateMemPoint = this->shiftPoint(this->deallocateMemPoint, blockSize);
 
-				if (this->deallocateMemPoint == this->roundupPoint)
-				{
-					this->deallocateMemPoint = 0;
-					this->roundupPoint = invalidMem_t;
-				}
 				this->allocatedBytes -= blockSize;
 			}
 		}
