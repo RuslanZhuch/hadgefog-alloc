@@ -45,6 +45,7 @@ export namespace hfog::Algorithms
 			if (outMemory.ptr != nullptr)
 			{
 				this->allocateMemPoint = tryAllocatePoint;
+
 				if (this->roundupPoint == invalidMem_t)
 					this->roundupPoint = newRoundupPoint;
 

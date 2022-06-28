@@ -22,7 +22,7 @@ static constexpr auto BUFFER_LEN{ 256_B };
 
 static const auto& generateStackExtMemBlock()
 {
-
+	
 	static byte_t extMemBuffer[BUFFER_LEN];
 	std::memset(extMemBuffer, 0, sizeof(extMemBuffer));
 
