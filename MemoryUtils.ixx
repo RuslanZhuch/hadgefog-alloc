@@ -5,7 +5,7 @@ module;
 
 export module hfog.MemoryUtils;
 
-export using mem_t = size_t;
+export using mem_t = unsigned int;
 export using byte_t = unsigned char;
 export inline constexpr auto invalidMem_t = std::numeric_limits<mem_t>::max();
 
